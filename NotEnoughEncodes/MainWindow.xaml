@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotEnoughEncodes"
         mc:Ignorable="d"
-        Title="NotEnoughEncodes" Height="342.715" Width="641.308" ResizeMode="CanMinimize">
+        Title="NotEnoughEncodes" Height="352.165" Width="641.308" ResizeMode="CanMinimize">
     <Window.Background>
         <ImageBrush ImageSource="bgneu1.jpg" Stretch="UniformToFill"/>
     </Window.Background>
@@ -17,9 +17,8 @@
             <ColumnDefinition Width="141*"/>
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="textBlockPath" HorizontalAlignment="Left" Margin="109,15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="20" Width="402" Background="#99232323" Foreground="White" Grid.ColumnSpan="4"><Run Text="  "/><Run Text="Input Video"/></TextBlock>
-        <Button Content="Open File" HorizontalAlignment="Left" Height="22" Margin="24,15,0,0" VerticalAlignment="Top" Width="96" Click="Button_Click" Background="#99232323" Foreground="White" Grid.Column="3"/>
+        <Button Content="Open File" HorizontalAlignment="Left" Height="22" Margin="24,15,0,0" VerticalAlignment="Top" Width="96" Click="Button_Click" Background="#99232323" Foreground="White" Grid.Column="3" BorderBrush="#FFC3C3C3"/>
         <Label Content="1. Video File" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Width="92"/>
-        <Button Content="Start Encode" HorizontalAlignment="Left" Height="40" Margin="10,238,0,0" VerticalAlignment="Top" Width="129" Grid.Column="2" Background="#99232323" Foreground="White" Click="Button_Click_1" Grid.ColumnSpan="2"/>
         <TextBox x:Name="TextBoxChunkLength" HorizontalAlignment="Left" Height="26" Margin="211,56,0,0" TextWrapping="Wrap" Text="120" VerticalAlignment="Top" Width="38" Background="#99232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
         <Label Content="2. Split Settings" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323"/>
         <Label Content="Chunk length (s)" HorizontalAlignment="Left" Margin="109,56,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
@@ -44,6 +43,13 @@
         <TextBox x:Name="TextBoxCpuUsed" HorizontalAlignment="Left" Height="26" Margin="63,134,0,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
         <Label Content="Passes" HorizontalAlignment="Left" Margin="14,165,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="3"/>
         <TextBox x:Name="TextBoxPasses" HorizontalAlignment="Left" Height="26" Margin="63,165,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
+        <Button Content="Start Encode" HorizontalAlignment="Left" Height="40" Margin="10,213,0,0" VerticalAlignment="Top" Width="129" Grid.Column="2" Background="#99232323" Foreground="White" Click="Button_Click_1" Grid.ColumnSpan="2" BorderBrush="#FFC3C3C3"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="10,264,0,0" VerticalAlignment="Top" Width="67" Click="Button_Click_2" Background="#99232323" Foreground="White" Height="40" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="#FFC3C3C3"/>
+        <Label Content="Framerate (Rate/Scale)" HorizontalAlignment="Left" Margin="113,196,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <TextBox x:Name="TextBoxFramerate" HorizontalAlignment="Left" Height="26" Margin="247,196,0,0" TextWrapping="Wrap" Text="24000/1001" VerticalAlignment="Top" Width="109" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
+        <ProgressBar x:Name="prgbar" HorizontalAlignment="Left" Height="40" Margin="10,264,0,0" VerticalAlignment="Top" Width="455" Grid.ColumnSpan="2" Background="#7F000000" Foreground="#4CF3F3F3"/>
+        <Button Content=" Clear&#xD;&#xA;Chunks" HorizontalAlignment="Left" Margin="58,264,0,0" VerticalAlignment="Top" Width="62" Height="40" Grid.Column="3" Click="Button_Click_3" Background="#99232323" Foreground="Red" BorderBrush="Red"/>
+        <Label x:Name="pLabel" Content="" HorizontalAlignment="Left" Margin="220,271,0,0" VerticalAlignment="Top" Foreground="White"/>
 
     </Grid>
 </Window>
