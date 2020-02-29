@@ -424,6 +424,7 @@
         <Label Content="2. Output" HorizontalAlignment="Left" Margin="9,42,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Width="92"/>
         <TextBlock x:Name="textBlockOutput" HorizontalAlignment="Left" Margin="109,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="20" Width="402" Background="#99232323" Foreground="White" Grid.ColumnSpan="4" Text="  Output"/>
         <Button x:Name="ButtonOutput" Content="Save to..." Grid.Column="3" HorizontalAlignment="Left" Margin="24,45,0,0" VerticalAlignment="Top" Width="96" Background="#99232323" Foreground="White" BorderBrush="#FFC3C3C3" Click="ButtonOutput_Click"/>
+        <Button Content="Save Settings" HorizontalAlignment="Left" Margin="14,152,0,0" VerticalAlignment="Top" Width="106" Background="#99232323" Foreground="#FF74FF00" BorderBrush="#FFC3C3C3" Height="22" Click="Button_Click_4"/>
 
 
     </Grid>

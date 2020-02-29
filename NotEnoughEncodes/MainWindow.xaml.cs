@@ -27,7 +27,60 @@ namespace NotEnoughEncodes
             //Sets the Number of Workers = Phsyical Core Count
             int tempCorecount = coreCount * 1 / 2;
             TextBoxNumberWorkers.Text = tempCorecount.ToString();
-                       
+
+            //Load Settings
+            readSettings();
+        }
+
+        public void readSettings()
+        {
+            try
+            {
+                //If settings.ini exist -> Set all Values
+                bool fileExist = File.Exists("settings.ini");
+
+                if (fileExist)
+                {
+                    string[] lines = System.IO.File.ReadAllLines("settings.ini");
+
+                    TextBoxNumberWorkers.Text = lines[0];
+                    ComboBoxCpuUsed.Text = lines[1];
+                    ComboBoxBitdepth.Text = lines[2];
+                    TextBoxEncThreads.Text = lines[3];
+                    TextBoxcqLevel.Text = lines[4];
+                    TextBoxKeyframeInterval.Text = lines[5];
+                    TextBoxTileCols.Text = lines[6];
+                    TextBoxTileRows.Text = lines[7];
+                    ComboBoxPasses.Text = lines[8];
+                    TextBoxFramerate.Text = lines[9];
+                    ComboBoxEncMode.Text = lines[10];
+                    TextBoxChunkLength.Text = lines[11];
+                }
+
+            }
+            catch { }
+
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            //Saves all Current Settings to a file
+            string maxConcurrency = TextBoxNumberWorkers.Text;
+            string cpuUsed = ComboBoxCpuUsed.Text;
+            string bitDepth = ComboBoxBitdepth.Text;
+            string encThreads = TextBoxEncThreads.Text;
+            string cqLevel = TextBoxcqLevel.Text;
+            string kfmaxdist = TextBoxKeyframeInterval.Text;
+            string tilecols = TextBoxTileCols.Text;
+            string tilerows = TextBoxTileRows.Text;
+            string nrPasses = ComboBoxPasses.Text;
+            string fps = TextBoxFramerate.Text;
+            string encMode = this.ComboBoxEncMode.Text;
+            string chunkLength = TextBoxChunkLength.Text;
+
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength };
+            System.IO.File.WriteAllLines("settings.ini", lines);
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -164,10 +217,13 @@ namespace NotEnoughEncodes
                 //Set the Maximum Value of Progressbar
                 prgbar.Maximum = chunks.Count();
             }
-
+            
             //Starts the async task
             StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps, encMode, resume, videoOutput);
+            //Set Maximum of Progressbar
             prgbar.Maximum = chunks.Count();
+            //Set the Progresslabel to 0 out of Number of chunks, because people would think that it doesnt to anything
+            pLabel.Dispatcher.Invoke(() => pLabel.Content = "0 / " + prgbar.Maximum, DispatcherPriority.Background);
 
         }
 
@@ -395,20 +451,15 @@ namespace NotEnoughEncodes
         {
             try
             {
-                //Delete all files in Chunks folder
-                System.IO.DirectoryInfo dichunk = new DirectoryInfo("Chunks");
-                foreach (FileInfo file in dichunk.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (DirectoryInfo dir in dichunk.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
+                //Delete Files, because of lazy dump****
+                File.Delete("encoded.txt");
+                Directory.Delete("Chunks", true);
 
             }
             catch { }
         }
+
+        //Some smaller Blackmagic, so parallel Workers won't lockdown the encoded.txt file
         private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
         public void WriteToFileThreadSafe(string text, string path)
         {
@@ -429,7 +480,6 @@ namespace NotEnoughEncodes
                 _readWriteLock.ExitWriteLock();
             }
         }
-
 
     }
 }
