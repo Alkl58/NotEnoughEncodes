@@ -35,8 +35,8 @@ namespace NotEnoughEncodes
                 coreCount += int.Parse(item["NumberOfCores"].ToString());
             }
             //Sets the Number of Workers = Phsyical Core Count
-            TextBoxNumberWorkers.Text = coreCount.ToString();
-
+            int tempCorecount = coreCount * 1 / 2;
+            TextBoxNumberWorkers.Text = tempCorecount.ToString();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
