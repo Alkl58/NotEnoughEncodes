@@ -54,8 +54,8 @@ namespace NotEnoughEncodes
 
         public void MainClass()
         {
-
-            
+            //Sets Label
+            pLabel.Dispatcher.Invoke(() => pLabel.Content = "Starting...", DispatcherPriority.Background);
 
             //Sets the working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -128,8 +128,8 @@ namespace NotEnoughEncodes
 
             //Parse Textbox Text to String for loop threading
             int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
-            int cpuUsed = Int16.Parse(TextBoxCpuUsed.Text);
-            int bitDepth = Int16.Parse(TextBoxBitDepth.Text);
+            int cpuUsed = Int16.Parse(ComboBoxCpuUsed.Text);
+            int bitDepth = Int16.Parse(ComboBoxBitdepth.Text);
             int encThreads = Int16.Parse(TextBoxEncThreads.Text);
             int cqLevel = Int16.Parse(TextBoxcqLevel.Text);
             int kfmaxdist = Int16.Parse(TextBoxKeyframeInterval.Text);
@@ -250,14 +250,9 @@ namespace NotEnoughEncodes
                                         pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                         if (Cancel.CancelAll == false)
                                         {
-                                            try
-                                            {
-                                                File.AppendAllText("encoded.txt",
-                                             items + Environment.NewLine);
-
-                                            }
-                                            catch { }
-                                            
+                                            //Write Item to file for later resume if something bad happens
+                                            WriteToFileThreadSafe(items, "encoded.txt");
+                                         
                                         }
                                         else
                                         {
@@ -289,13 +284,9 @@ namespace NotEnoughEncodes
                                         pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                         if (Cancel.CancelAll == false)
                                         {
-                                            try
-                                            {
-                                                File.AppendAllText("encoded.txt",
-                                             items + Environment.NewLine);
+                                            //Write Item to file for later resume if something bad happens
+                                            WriteToFileThreadSafe(items, "encoded.txt");
 
-                                            }
-                                            catch { }
                                         }
                                         else
                                         {
@@ -406,6 +397,26 @@ namespace NotEnoughEncodes
 
             }
             catch { }
+        }
+        private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+        public void WriteToFileThreadSafe(string text, string path)
+        {
+            // Set Status to Locked
+            _readWriteLock.EnterWriteLock();
+            try
+            {
+                // Append text to the file
+                using (StreamWriter sw = File.AppendText(path))
+                {
+                    sw.WriteLine(text);
+                    sw.Close();
+                }
+            }
+            finally
+            {
+                // Release lock
+                _readWriteLock.ExitWriteLock();
+            }
         }
 
     }
