@@ -13,6 +13,8 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 
 ---
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ku2rkeo5u4mm164l/branch/master?svg=true)](https://ci.appveyor.com/project/Alkl/notenoughencodes/branch/master)
+
 ### Installation:
 
 1. Download [ffmpeg](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases).

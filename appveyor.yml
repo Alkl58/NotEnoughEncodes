@@ -1,0 +1,9 @@
+version: 1.0.{build}
+build:
+  verbosity: minimal
+artifacts:
+- path: '\NotEnoughEncodes\bin\Debug\'
+  name: NotEnoughEncodes.exe
+skip_commits:
+  files:
+    - README.md
