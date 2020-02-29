@@ -9,7 +9,7 @@ At the end it will [Concatenate](https://trac.ffmpeg.org/wiki/Concatenate) the c
 
 This tool is Windows only. For multiplatform and more features check out the CLI Tool [Av1an](https://github.com/master-of-zen/Av1an).
 
-![alt text](https://i.imgur.com/8BOlXP9.png)
+![alt text](https://i.imgur.com/4vWpzzT.png)
 
 ---
 
@@ -22,10 +22,16 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 
 ### Usage:
 1. Open NotEnoughEncodes.exe
-2. Select your video file
+2. Select your video file / Set video output file
 3. Select the Chunk length in seconds. (The Chunks won't be exactly this long. ffmpeg will cut it at the nearest Key-Frame!)
-4. Edit the Encoding settings. (Constant Quality Mode is the only mode supported yet!)
-5. Click on "Start Encode". During the encoding process the programm will look like frozen. If you want to cancel the process you have to go into the Taskmanager and kill it by yourself.
+4. Edit the Encoding settings. (You can save the settings by clicking on "Save Settings")
+5. Click on "Start Encode".  
+
+NEE now has a resume feature, with which you can resume cancled encodes. (unfinished chunks will be overwritten!)
+
+If you press on cancel, the program will terminate ALL aomenc and ffmpeg processes. Don't press it if you have other encodes/instances running!
+
+If you experience framelosses you may have a slightly corrupted video. Using the option "Reencode Lossless" might help with this issue. (Video will be encoded to utvideo - this may take alot of disk space)
 
 ---
 ### How does this program work?:
