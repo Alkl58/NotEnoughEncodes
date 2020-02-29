@@ -38,6 +38,14 @@ namespace NotEnoughEncodes
                 textBlockPath.Text = openFileDialog.FileName;
         }
 
+        private void ButtonOutput_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Matroska|*.mkv";
+            if (saveFileDialog.ShowDialog() == true)
+                textBlockOutput.Text = saveFileDialog.FileName;
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             //Start MainClass
@@ -65,6 +73,7 @@ namespace NotEnoughEncodes
 
             //Start Splitting
             String videoInput = textBlockPath.Text;
+            string videoOutput = textBlockOutput.Text;
 
             if (CheckBoxResume.IsChecked == false)
             {
@@ -157,20 +166,20 @@ namespace NotEnoughEncodes
             }
 
             //Starts the async task
-            StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps, encMode, resume);
+            StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps, encMode, resume, videoOutput);
             prgbar.Maximum = chunks.Count();
 
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume)
+        private async void StartTask(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume, string videoOutput)
         {
             //Run encode class async
-            await Task.Run(() => encode(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, passes, fps, encMode, resume));
+            await Task.Run(() => encode(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, passes, fps, encMode, resume, videoOutput));
         }
 
         //Main Encoding Class
-        public void encode(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume)
+        public void encode(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume, string videoOutput)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -313,16 +322,18 @@ namespace NotEnoughEncodes
                 }
 
                 //Mux all Encoded chunks back together
-                concat();
+                concat(videoOutput);
 
         }
 
         //Mux ivf Files back together
-        private void concat()
+        private void concat(string videoOutput)
         {
             if (Cancel.CancelAll == false)
             {
                 string currentPath = Directory.GetCurrentDirectory();
+
+                string outputfilename = videoOutput;
 
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
 
@@ -342,7 +353,7 @@ namespace NotEnoughEncodes
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
-                startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy output.mkv";
+                startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy "+ '\u0022' + outputfilename + '\u0022';
                 //Console.WriteLine(startInfo.Arguments);
                 process.StartInfo = startInfo;
                 process.Start();
@@ -418,6 +429,7 @@ namespace NotEnoughEncodes
                 _readWriteLock.ExitWriteLock();
             }
         }
+
 
     }
 }
