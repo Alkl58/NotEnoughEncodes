@@ -37,6 +37,8 @@ namespace NotEnoughEncodes
             //Sets the Number of Workers = Phsyical Core Count
             int tempCorecount = coreCount * 1 / 2;
             TextBoxNumberWorkers.Text = tempCorecount.ToString();
+
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -103,7 +105,7 @@ namespace NotEnoughEncodes
             }
 
 
-
+          
             //Parse Textbox Text to String for loop threading
             int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
             int cpuUsed = Int16.Parse(TextBoxCpuUsed.Text);
@@ -115,23 +117,25 @@ namespace NotEnoughEncodes
             int tilerows = Int16.Parse(TextBoxTileRows.Text);
             int nrPasses = Int16.Parse(TextBoxPasses.Text);
             string fps = TextBoxFramerate.Text;
+            string encMode = this.ComboBoxEncMode.Text;
+
 
             //Starts the async task
-            StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps);
+            StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps, encMode);
             //Set the Maximum Value of Progressbar
             prgbar.Maximum = chunks.Count();
 
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps)
+        private async void StartTask(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode)
         {
             //Run encode class async
-            await Task.Run(() => encode(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, passes, fps));
+            await Task.Run(() => encode(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, passes, fps, encMode));
         }
 
         //Main Encoding Class
-        public void encode(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps)
+        public void encode(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -145,6 +149,24 @@ namespace NotEnoughEncodes
 
             //Get Number of chunks for label of progressbar
             string labelstring = chunks.Count().ToString();
+
+            string finalEncodeMode = "";
+
+            //Sets the Encoding Mode
+            if (encMode == "q")
+            {
+                finalEncodeMode = " --end-usage=q --cq-level="+ cqLevel;
+
+            }else if (encMode == "vbr")
+            {
+                //If vbr set finalEncodeMode
+                finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
+            }else if (encMode == "cbr")
+            {
+                //If cbr set finalEncodeMode
+                finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
+            }
+
             
             //Parallel Encoding - aka some blackmagic
             using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
@@ -165,9 +187,9 @@ namespace NotEnoughEncodes
                                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                 startInfo.FileName = "cmd.exe";
-                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1 --cpu-used=" + cpuUsed + " --threads=" + encThreads + " --end-usage=q --cq-level=" + cqLevel + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
+                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1 --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
                                 process.StartInfo = startInfo;
-                                //Console.WriteLine(startInfo.Arguments);
+                                Console.WriteLine(startInfo.Arguments);
                                 process.Start();
                                 process.WaitForExit();
                                 //Progressbar +1
@@ -182,7 +204,7 @@ namespace NotEnoughEncodes
                                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                 startInfo.FileName = "cmd.exe";
-                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + " --end-usage=q --cq-level=" + cqLevel + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=NUL";
+                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=NUL";
                                 process.StartInfo = startInfo;
                                 //Console.WriteLine(startInfo.Arguments);
                                 process.Start();
@@ -190,7 +212,7 @@ namespace NotEnoughEncodes
 
                                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                 startInfo.FileName = "cmd.exe";
-                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + " --end-usage=q --cq-level=" + cqLevel + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
+                                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
                                 process.StartInfo = startInfo;
                                 //Console.WriteLine(startInfo.Arguments);
                                 process.Start();
@@ -237,7 +259,7 @@ namespace NotEnoughEncodes
             startInfo.FileName = "cmd.exe";
             //FFmpeg Arguments
             startInfo.Arguments = "/C (for %i in (Chunks\\*.ivf) do @echo file '%i') > Chunks\\mylist.txt";
-            Console.WriteLine(startInfo.Arguments);
+            //Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
@@ -247,7 +269,7 @@ namespace NotEnoughEncodes
             startInfo.FileName = "cmd.exe";
             //FFmpeg Arguments
             startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy Output\\output.mkv";
-            Console.WriteLine(startInfo.Arguments);
+            //Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
