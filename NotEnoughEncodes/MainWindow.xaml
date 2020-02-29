@@ -326,7 +326,6 @@
         <Label Content="CPU-Used" HorizontalAlignment="Left" Margin="13,134,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="2" Grid.ColumnSpan="2"/>
         <TextBox x:Name="TextBoxCpuUsed" HorizontalAlignment="Left" Height="26" Margin="63,134,0,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
         <Label Content="Passes" HorizontalAlignment="Left" Margin="14,165,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="3"/>
-        <TextBox x:Name="TextBoxPasses" HorizontalAlignment="Left" Height="26" Margin="63,165,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
         <Button Content="Start Encode" HorizontalAlignment="Left" Height="40" Margin="10,213,0,0" VerticalAlignment="Top" Width="129" Grid.Column="2" Background="#99232323" Foreground="White" Click="Button_Click_1" Grid.ColumnSpan="2" BorderBrush="#FFC3C3C3"/>
         <Button Content="Cancel" HorizontalAlignment="Left" Margin="10,264,0,0" VerticalAlignment="Top" Width="67" Click="Button_Click_2" Background="#99232323" Foreground="White" Height="40" Grid.Column="2" Grid.ColumnSpan="2" BorderBrush="#FFC3C3C3"/>
         <Label Content="Framerate (Rate/Scale)" HorizontalAlignment="Left" Margin="84,196,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
@@ -357,6 +356,27 @@
         <Label Content="Encode Mode" HorizontalAlignment="Left" Margin="130,103,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <CheckBox x:Name="CheckBoxReencode" Content="CheckBox" Grid.Column="3" HorizontalAlignment="Left" Margin="94,62,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
         <Label Content="Reencode Lossless" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.ColumnSpan="2" Grid.Column="2"/>
+        <CheckBox x:Name="CheckBoxResume" Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="43,226,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
+        <Label Content="Resume" HorizontalAlignment="Left" Margin="383,220,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.ColumnSpan="2"/>
+        <ComboBox x:Name="ComboBoxPasses" HorizontalAlignment="Left" Margin="64,168,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}" Grid.Column="3">
+            <ComboBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0.31"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0.324"/>
+                </TransformGroup>
+            </ComboBox.RenderTransform>
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="Background" Value="#FF383838"/>
+                    <Setter Property="BorderBrush" Value="#FF383838"/>
+                    <Setter Property="Opacity" Value="80"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+            <ComboBoxItem Content="1" Background="#FF383838" IsSelected="True" Foreground="#FFC9C9C9"/>
+            <ComboBoxItem Content="2"/>
+        </ComboBox>
 
 
     </Grid>
