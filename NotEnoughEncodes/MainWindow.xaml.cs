@@ -107,6 +107,19 @@ namespace NotEnoughEncodes
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
                     TextBoxInputVideo.Text = openFileDialog.FileName;
+
+            //If settings.ini exist -> Set all Values
+            bool fileExist = File.Exists("ffprobe.exe");
+
+            //Gets the Stream Framerate IF ffrpobe exist
+            if (fileExist)
+            {
+                getStreamFps(openFileDialog.FileName);
+            }
+
+
+            
+
         }
 
         private void ButtonOutput_Click(object sender, RoutedEventArgs e)
@@ -637,5 +650,32 @@ namespace NotEnoughEncodes
             process.WaitForExit();
 
         }
+
+        public void getStreamFps(string fileinput)
+        {
+
+            //Gets the Stream Framerate
+            string input = "";
+
+            input = '\u0022' + fileinput + '\u0022';
+
+            Process compiler = new Process();
+            compiler.StartInfo.FileName = "cmd.exe";
+            compiler.StartInfo.Arguments = "/C ffprobe.exe -i " + input + " -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate";
+            compiler.StartInfo.UseShellExecute = false;
+            compiler.StartInfo.RedirectStandardOutput = true;
+            compiler.Start();
+
+            //Console.WriteLine(compiler.StandardOutput.ReadToEnd());
+
+            string fpsOutput = compiler.StandardOutput.ReadToEnd();
+
+            //Console.WriteLine(fpsOutput);
+
+            TextBoxFramerate.Text = fpsOutput;
+
+            compiler.WaitForExit();
+        }
+
     }
 }
