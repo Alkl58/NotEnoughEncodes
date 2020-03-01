@@ -428,6 +428,31 @@
         <TextBox x:Name="TextBoxCustomSettings" HorizontalAlignment="Left" Height="65" Margin="14,220,0,0" TextWrapping="Wrap" Text="Custom Settings: Do NOT specify Input/Output | Do NOT specify 1/2-Pass -&gt; Use the above &quot;Passes&quot; Option!&#xD;&#xA;Example usage: &quot;--end-usage=q --cq-level=30 --cpu-used=5 --bit-depth=10&quot; (without &quot; &quot; !)" VerticalAlignment="Top" Width="670" Grid.ColumnSpan="4" Background="#99232323" Foreground="White" IsEnabled="False"/>
         <CheckBox x:Name="CheckBoxCustomSettings" Content="" HorizontalAlignment="Left" Margin="157,195,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
         <Label Content="Enabel custom settings" HorizontalAlignment="Left" Margin="14,189,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <CheckBox x:Name="CheckBoxEnableAudio" Content="" HorizontalAlignment="Left" Margin="100,312,0,0" VerticalAlignment="Top"/>
+        <Label Content="Enable Audio" HorizontalAlignment="Left" Margin="14,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <ComboBox x:Name="ComboBoxAudioCodec" HorizontalAlignment="Left" Margin="127,309,0,0" VerticalAlignment="Top" Width="100" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}">
+            <ComboBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0.31"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0.324"/>
+                </TransformGroup>
+            </ComboBox.RenderTransform>
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="Background" Value="#FF383838"/>
+                    <Setter Property="BorderBrush" Value="#FF383838"/>
+                    <Setter Property="Opacity" Value="80"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+            <ComboBoxItem Content="Opus" Background="#FF383838" IsSelected="True" Foreground="#FFC9C9C9"/>
+            <ComboBoxItem Content="AAC CBR" Foreground="#FFC9C9C9"/>
+            <ComboBoxItem Content="Copy Audio" Foreground="#FFC9C9C9"/>
+            <ComboBoxItem Content="Opus 5.1"/>
+        </ComboBox>
+        <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="21" Margin="292,308,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
+        <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
 
 
     </Grid>

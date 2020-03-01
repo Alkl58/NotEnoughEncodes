@@ -174,6 +174,13 @@ namespace NotEnoughEncodes
 
             }
 
+
+            //Audio Encoding
+            if (CheckBoxEnableAudio.IsChecked == true)
+            {
+                encodeAudio(videoInput);
+            }
+
             //Create Array List with all Chunks
             string[] chunks;
             //Sets the Chunks directory
@@ -269,8 +276,16 @@ namespace NotEnoughEncodes
                 //Console.WriteLine(allSettingsAom);
             }
 
+            //Sets the boolean if audio should be included -> Concat() needs this value
+            Boolean audioOutput = false;
+            if (CheckBoxEnableAudio.IsChecked == true)
+            {
+                audioOutput = true;
+            }
+               
+
             //Starts the async task
-            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput);
+            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput);
             //Set Maximum of Progressbar
             prgbar.Maximum = chunks.Count();
             //Set the Progresslabel to 0 out of Number of chunks, because people would think that it doesnt to anything
@@ -279,14 +294,14 @@ namespace NotEnoughEncodes
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput)
+        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput, Boolean audioOutput)
         {
             //Run encode class async
-            await Task.Run(() => encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput));
+            await Task.Run(() => encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput));
         }
 
         //Main Encoding Class
-        public void encode(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput)
+        public void encode(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput, Boolean audioOutput)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -408,12 +423,12 @@ namespace NotEnoughEncodes
                 }
 
                 //Mux all Encoded chunks back together
-                concat(videoOutput);
+                concat(videoOutput, audioOutput);
 
         }
 
         //Mux ivf Files back together
-        private void concat(string videoOutput)
+        private void concat(string videoOutput, Boolean audioOutput)
         {
             if (Cancel.CancelAll == false)
             {
@@ -434,16 +449,46 @@ namespace NotEnoughEncodes
                 process.StartInfo = startInfo;
                 process.Start();
                 process.WaitForExit();
+                
+                if (audioOutput == false)
+                {
 
-                //Concat the Videos
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                //FFmpeg Arguments
-                startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy "+ '\u0022' + outputfilename + '\u0022';
-                //Console.WriteLine(startInfo.Arguments);
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit();
+                    //Concat the Videos
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.FileName = "cmd.exe";
+                    //FFmpeg Arguments
+                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy " + '\u0022' + outputfilename + '\u0022';
+                    //Console.WriteLine(startInfo.Arguments);
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    process.WaitForExit();
+
+                }else if (audioOutput == true)
+                {
+
+                    //Concat the Videos
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.FileName = "cmd.exe";
+                    //FFmpeg Arguments
+                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy no_audio.mkv";
+                    //Console.WriteLine(startInfo.Arguments);
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    process.WaitForExit();
+
+                    //Concat the Videos
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.FileName = "cmd.exe";
+                    //FFmpeg Arguments
+                    startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i Audio\\audio.mkv -c copy " + '\u0022' + outputfilename + '\u0022';
+                    //Console.WriteLine(startInfo.Arguments);
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    process.WaitForExit();
+
+                }
+
+
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed!", DispatcherPriority.Background);
 
             }
@@ -484,6 +529,7 @@ namespace NotEnoughEncodes
                 //Delete Files, because of lazy dump****
                 File.Delete("encoded.txt");
                 Directory.Delete("Chunks", true);
+                Directory.Delete("Audio", true);
 
             }
             catch { }
@@ -538,6 +584,57 @@ namespace NotEnoughEncodes
             TextBoxTileCols.IsEnabled = true;
             TextBoxTileRows.IsEnabled = true;
             TextBoxKeyframeInterval.IsEnabled = true;
+
+        }
+
+        public void encodeAudio(string videoInput)
+        {
+
+            string audioBitrate = "";
+
+            audioBitrate = TextBoxAudioBitrate.Text;
+
+            string allAudioSettings = "";
+            //Sets Settings for Audio Encoding
+            if (ComboBoxAudioCodec.Text == "Copy Audio")
+            {
+
+                allAudioSettings = " -c:a copy";
+
+            }else if (ComboBoxAudioCodec.Text == "Opus")
+            {
+                allAudioSettings = " -c:a libopus -b:a " + audioBitrate +"k ";
+
+            }else if (ComboBoxAudioCodec.Text == "Opus 5.1")
+            {
+                allAudioSettings = " -c:a libopus -b:a " + audioBitrate + "k -af channelmap=channel_layout=5.1";
+
+            }else if (ComboBoxAudioCodec.Text == "AAC CBR")
+            {
+
+                allAudioSettings = " -c:a libfdk_aac -b:a " + audioBitrate +"k ";
+
+            }
+
+            //Sets the working directory
+            string currentPath = Directory.GetCurrentDirectory();
+            //Creates Audio Folder
+            if (!Directory.Exists(Path.Combine(currentPath, "Audio")))
+                Directory.CreateDirectory(Path.Combine(currentPath, "Audio"));
+
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+
+            //FFmpeg Arguments
+            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + allAudioSettings + " -vn " + '\u0022' + "Audio\\audio.mkv" + '\u0022';
+
+            //Console.WriteLine(startInfo.Arguments);
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
 
         }
     }
