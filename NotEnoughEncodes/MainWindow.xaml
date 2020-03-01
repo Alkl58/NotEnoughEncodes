@@ -447,9 +447,13 @@
                 </Style>
             </ComboBox.ItemContainerStyle>
             <ComboBoxItem Content="Opus" Background="#FF383838" IsSelected="True" Foreground="White"/>
+            <ComboBoxItem Content="Opus 5.1"/>
             <ComboBoxItem Content="AAC CBR" Foreground="White"/>
             <ComboBoxItem Content="Copy Audio" Foreground="White"/>
-            <ComboBoxItem Content="Opus 5.1"/>
+            <ComboBoxItem Content="AC3"/>
+            <ComboBoxItem Content="FLAC"/>
+            <ComboBoxItem Content="MP3 CBR"/>
+            <ComboBoxItem Content="MP3 VBR"/>
         </ComboBox>
         <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="292,306,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
         <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>

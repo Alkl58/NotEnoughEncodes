@@ -653,6 +653,7 @@ namespace NotEnoughEncodes
                 File.Delete("encoded.txt");
                 Directory.Delete("Chunks", true);
                 Directory.Delete("Audio", true);
+                File.Delete("no_audio.mkv");
 
             }
             catch { }
@@ -756,6 +757,46 @@ namespace NotEnoughEncodes
                 }
                 allAudioSettings = " -c:a aac -b:a " + audioBitrate +"k ";
                 
+            }else if (ComboBoxAudioCodec.Text == "AC3")
+            {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to AC3 CBR", "log.log");
+                }
+                allAudioSettings = " -c:a ac3 -b:a " + audioBitrate + "k ";
+
+            }else if (ComboBoxAudioCodec.Text == "FLAC")
+            {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to FLAC", "log.log");
+                }
+                allAudioSettings = " -c:a flac ";
+
+            }else if (ComboBoxAudioCodec.Text == "MP3 CBR")
+            {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to MP3 CBR", "log.log");
+                }
+                allAudioSettings = " -c:a libmp3lame -b:a " + audioBitrate + "k ";
+
+            }else if (ComboBoxAudioCodec.Text == "MP3 VBR")
+            {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to MP3 CBR", "log.log");
+                }
+                if (Int16.Parse(TextBoxAudioBitrate.Text) >= 10)
+                {
+                    MessageBox.Show("Audio VBR Range is from 0-9");
+                }else if (Int16.Parse(TextBoxAudioBitrate.Text) <= 10)
+                {
+                    allAudioSettings = " -c:a libmp3lame -q:a " + audioBitrate + " ";
+
+                }
+                    
+
             }
 
             //Sets the working directory
