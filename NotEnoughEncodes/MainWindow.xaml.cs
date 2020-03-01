@@ -138,19 +138,43 @@ namespace NotEnoughEncodes
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Clicked on Start Encode", "log.log");
+            }
+            
 
             if (TextBoxInputVideo.Text == " Input Video")
             {
                 MessageBox.Show("No Input File selected!");
+                
 
-            }else if (TextBoxOutputVideo.Text == " Output Video")
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " No Input File selected!", "log.log");
+                }
+
+            }
+            else if (TextBoxOutputVideo.Text == " Output Video")
             {
                 MessageBox.Show("No Output Path specified!");
+                
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " No Output Path specified!", "log.log");
+                }
+
             }
             else if (TextBoxInputVideo.Text != " Input Video")
             {
+
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started MainClass()", "log.log");
+                }
                 //Start MainClass
                 MainClass();
+
             }
 
         }
@@ -165,14 +189,23 @@ namespace NotEnoughEncodes
 
         public void MainClass()
         {
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " MainClass started", "log.log");
+            }
             //Sets Label
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Starting...", DispatcherPriority.Background);
+
 
             //Sets the working directory
             string currentPath = Directory.GetCurrentDirectory();
             //Checks if Chunks folder exist, if no it creates Chunks folder
             if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Checked or Created Chunks folder", "log.log");
+            }
 
             //Sets the variable for input / output of video
             string videoInput = TextBoxInputVideo.Text;
@@ -181,6 +214,12 @@ namespace NotEnoughEncodes
             //Start Splitting
             if (CheckBoxResume.IsChecked == false)
             {
+
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Start Splitting", "log.log");
+                }
+
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -190,11 +229,20 @@ namespace NotEnoughEncodes
                 //Checks if Source needs to be reencoded
                 if (CheckBoxReencode.IsChecked == false)
                 {
+                    if (CheckBoxLogging.IsChecked == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting without reencoding", "log.log");
+                    }
                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vcodec copy -f segment -segment_time " + TextBoxChunkLength.Text + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
 
                 }
                 else if (CheckBoxReencode.IsChecked == true)
                 {
+
+                    if (CheckBoxLogging.IsChecked == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting with reencoding", "log.log");
+                    }
                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -c:v utvideo -f segment -segment_time " + TextBoxChunkLength.Text + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
 
                 }
@@ -225,7 +273,10 @@ namespace NotEnoughEncodes
                 //Checks if there is more than 9 Chunks, inorder to rename them, because later in order to concat, it has to be sortet (Values from xx-xx instead of x-xx)
                 if (chunks.Count() >= 10)
                 {
-                                       
+                    if (CheckBoxLogging.IsChecked == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Renaming Chunk Files", "log.log");
+                    }
                     System.IO.File.Move(sdira + "\\out0.mkv", sdira + "\\out00.mkv");
                     System.IO.File.Move(sdira + "\\out1.mkv", sdira + "\\out01.mkv");
                     System.IO.File.Move(sdira + "\\out2.mkv", sdira + "\\out02.mkv");
@@ -261,11 +312,19 @@ namespace NotEnoughEncodes
             if (CheckBoxResume.IsChecked == true)
             {
                 resume = true;
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode Started", "log.log");
+                }
 
                 foreach (string line in File.ReadLines("encoded.txt"))
                 {
                     //Removes all Items from Arraylist which are in encoded.txt
                     chunks = chunks.Where(s => s != line).ToArray();
+                    if (CheckBoxLogging.IsChecked == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode - Deleting " + line + " from Array", "log.log");
+                    }
 
                 }
                 //Set the Maximum Value of Progressbar
@@ -278,17 +337,29 @@ namespace NotEnoughEncodes
             //Sets the Encoding Mode
             if (encMode == "q")
             {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to q", "log.log");
+                }
                 finalEncodeMode = " --end-usage=q --cq-level=" + cqLevel;
 
             }
             else if (encMode == "vbr")
             {
                 //If vbr set finalEncodeMode
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to vbr", "log.log");
+                }
                 finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
             }
             else if (encMode == "cbr")
             {
                 //If cbr set finalEncodeMode
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to cbr", "log.log");
+                }
                 finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
             }
 
@@ -312,6 +383,10 @@ namespace NotEnoughEncodes
             Boolean audioOutput = false;
             if (CheckBoxEnableAudio.IsChecked == true)
             {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Audio Boolean to true", "log.log");
+                }
                 audioOutput = true;
             }
 
@@ -328,8 +403,13 @@ namespace NotEnoughEncodes
         //Async Class -> UI doesnt freeze
         private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput, Boolean audioOutput)
         {
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Async Task started", "log.log");
+            }
             //Run encode class async
             await Task.Run(() => encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput));
+
         }
 
         //Main Encoding Class
@@ -377,6 +457,7 @@ namespace NotEnoughEncodes
                                 {
                                     if (passes == 1)
                                     {
+
                                         System.Diagnostics.Process process = new System.Diagnostics.Process();
                                         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -386,6 +467,7 @@ namespace NotEnoughEncodes
                                         Console.WriteLine(startInfo.Arguments);
                                         process.Start();
                                         process.WaitForExit();
+
                                         //Progressbar +1
                                         prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                         //Label of Progressbar = Progressbar
@@ -405,6 +487,7 @@ namespace NotEnoughEncodes
                                     }
                                     else if (passes == 2)
                                     {
+
                                         System.Diagnostics.Process process = new System.Diagnostics.Process();
                                         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -422,6 +505,7 @@ namespace NotEnoughEncodes
                                         //Console.WriteLine(startInfo.Arguments);
                                         process.Start();
                                         process.WaitForExit();
+
                                         prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                         pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                         if (Cancel.CancelAll == false)
@@ -454,14 +538,15 @@ namespace NotEnoughEncodes
 
                 }
 
-                //Mux all Encoded chunks back together
-                concat(videoOutput, audioOutput);
+            //Mux all Encoded chunks back together
+            concat(videoOutput, audioOutput);
 
         }
 
         //Mux ivf Files back together
         private void concat(string videoOutput, Boolean audioOutput)
         {
+
             if (Cancel.CancelAll == false)
             {
                 string currentPath = Directory.GetCurrentDirectory();
@@ -476,12 +561,14 @@ namespace NotEnoughEncodes
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
+
                 startInfo.Arguments = "/C (for %i in (Chunks\\*.ivf) do @echo file '%i') > Chunks\\mylist.txt";
                 //Console.WriteLine(startInfo.Arguments);
                 process.StartInfo = startInfo;
                 process.Start();
                 process.WaitForExit();
-                
+
+
                 if (audioOutput == false)
                 {
 
@@ -489,24 +576,29 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
+
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy " + '\u0022' + outputfilename + '\u0022';
                     //Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
 
-                }else if (audioOutput == true)
+
+                }
+                else if (audioOutput == true)
                 {
 
                     //Concat the Videos
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
+
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy no_audio.mkv";
                     //Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
+
 
                     //Concat the Videos
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -518,8 +610,8 @@ namespace NotEnoughEncodes
                     process.Start();
                     process.WaitForExit();
 
-                }
 
+                }
 
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed!", DispatcherPriority.Background);
 
@@ -530,7 +622,6 @@ namespace NotEnoughEncodes
         //Kill all aomenc instances
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-
             Cancel.CancelAll = true;
             KillInstances();
         }
@@ -623,7 +714,10 @@ namespace NotEnoughEncodes
 
         public void encodeAudio(string videoInput)
         {
-
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding started", "log.log");
+            }
             string audioBitrate = "";
 
             audioBitrate = TextBoxAudioBitrate.Text;
@@ -632,23 +726,36 @@ namespace NotEnoughEncodes
             //Sets Settings for Audio Encoding
             if (ComboBoxAudioCodec.Text == "Copy Audio")
             {
-
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to Audio Copy", "log.log");
+                }
                 allAudioSettings = " -c:a copy";
 
             }else if (ComboBoxAudioCodec.Text == "Opus")
             {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to libopus", "log.log");
+                }
                 allAudioSettings = " -c:a libopus -b:a " + audioBitrate +"k ";
 
             }else if (ComboBoxAudioCodec.Text == "Opus 5.1")
             {
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to libopus 5.1", "log.log");
+                }
                 allAudioSettings = " -c:a libopus -b:a " + audioBitrate + "k -af channelmap=channel_layout=5.1";
 
             }else if (ComboBoxAudioCodec.Text == "AAC CBR")
             {
-
+                if (CheckBoxLogging.IsChecked == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to AAC CBR", "log.log");
+                }
                 allAudioSettings = " -c:a aac -b:a " + audioBitrate +"k ";
                 
-
             }
 
             //Sets the working directory
@@ -664,8 +771,15 @@ namespace NotEnoughEncodes
             startInfo.FileName = "cmd.exe";
 
             //FFmpeg Arguments
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started Audio Encoding", "log.log");
+            }
             startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + allAudioSettings + " -vn " + '\u0022' + "Audio\\audio.mkv" + '\u0022';
-
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Ended", "log.log");
+            }
             //Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();

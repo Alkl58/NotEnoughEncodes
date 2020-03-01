@@ -453,6 +453,7 @@
         </ComboBox>
         <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="292,306,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
         <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <CheckBox x:Name="CheckBoxLogging" Content="Logging" HorizontalAlignment="Left" Margin="375,312,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White"/>
 
 
     </Grid>
