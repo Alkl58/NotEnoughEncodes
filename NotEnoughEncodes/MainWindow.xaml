@@ -309,24 +309,24 @@
         <Border BorderBrush="#00000000" BorderThickness="1" Grid.ColumnSpan="4" Height="4" Margin="11,70,20,0" VerticalAlignment="Top" Background="#7F000000"/>
         <Border BorderBrush="#00000000" BorderThickness="1" Grid.ColumnSpan="4" Height="4" Margin="9,113,22,0" VerticalAlignment="Top" Background="#7F000000"/>
         <Label Content="Number of workers" HorizontalAlignment="Left" Margin="292,79,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2"/>
-        <TextBox x:Name="TextBoxNumberWorkers" HorizontalAlignment="Left" Height="26" Margin="6,79,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="1"/>
+        <TextBox x:Name="TextBoxNumberWorkers" HorizontalAlignment="Left" Height="26" Margin="418,79,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2"/>
         <Label Content="Quality" HorizontalAlignment="Left" Margin="169,152,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <TextBox x:Name="TextBoxcqLevel" HorizontalAlignment="Left" Height="26" Margin="224,152,0,0" TextWrapping="Wrap" Text="30" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
         <Label Content="Threads" HorizontalAlignment="Left" Margin="325,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <TextBox x:Name="TextBoxEncThreads" HorizontalAlignment="Left" Height="26" Margin="382,121,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2"/>
         <Label Content="Bit-Depth" HorizontalAlignment="Left" Margin="316,152,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
-        <Label Content="Keyframe Interval" HorizontalAlignment="Left" Margin="234,184,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
-        <TextBox x:Name="TextBoxKeyframeInterval" HorizontalAlignment="Left" Height="26" Margin="342,184,0,0" TextWrapping="Wrap" Text="240" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
-        <Label Content="Tile Rows" HorizontalAlignment="Left" Margin="28,150,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="3"/>
-        <TextBox x:Name="TextBoxTileRows" HorizontalAlignment="Left" Height="26" Margin="95,149,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
-        <Label Content="Tile Columns" HorizontalAlignment="Left" Margin="445,150,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2"/>
-        <TextBox x:Name="TextBoxTileCols" HorizontalAlignment="Left" Height="26" Margin="5,150,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2" Grid.Column="2"/>
+        <Label Content="Keyframe Interval" HorizontalAlignment="Left" Margin="235,189,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <TextBox x:Name="TextBoxKeyframeInterval" HorizontalAlignment="Left" Height="26" Margin="342,189,0,0" TextWrapping="Wrap" Text="240" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
+        <Label Content="Tile Rows" HorizontalAlignment="Left" Margin="28,152,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="3"/>
+        <TextBox x:Name="TextBoxTileRows" HorizontalAlignment="Left" Height="26" Margin="96,152,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="3"/>
+        <Label Content="Tile Columns" HorizontalAlignment="Left" Margin="445,152,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="TextBoxTileCols" HorizontalAlignment="Left" Height="26" Margin="6,152,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2" Grid.Column="2"/>
         <Label Content="CPU-Used" HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="1"/>
         <Label Content="Passes" HorizontalAlignment="Left" Margin="44,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.Column="3"/>
         <Button Content="Start Encode" HorizontalAlignment="Left" Height="40" Margin="5,299,0,0" VerticalAlignment="Top" Width="129" Grid.Column="3" Background="#99232323" Foreground="White" Click="Button_Click_1" BorderBrush="#FFC3C3C3"/>
         <Button Content="Cancel" HorizontalAlignment="Left" Margin="5,339,0,0" VerticalAlignment="Top" Width="67" Click="Button_Click_2" Background="#99232323" Foreground="White" Height="40" Grid.Column="3" BorderBrush="#FFC3C3C3"/>
-        <Label Content="Framerate (Rate/Scale)" HorizontalAlignment="Left" Margin="391,184,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2" Width="132"/>
-        <TextBox x:Name="TextBoxFramerate" HorizontalAlignment="Left" Height="26" Margin="5,186,0,0" TextWrapping="Wrap" Text="24000/1001" VerticalAlignment="Top" Width="109" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Label Content="Framerate (Rate/Scale)" HorizontalAlignment="Left" Margin="391,189,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2" Width="132"/>
+        <TextBox x:Name="TextBoxFramerate" HorizontalAlignment="Left" Height="26" Margin="10,189,0,0" TextWrapping="Wrap" Text="24000/1001" VerticalAlignment="Top" Width="109" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="2" Grid.ColumnSpan="2"/>
         <ProgressBar x:Name="prgbar" HorizontalAlignment="Left" Height="40" Margin="14,339,0,0" VerticalAlignment="Top" Width="525" Grid.ColumnSpan="3" Background="#7F000000" Foreground="#4CF3F3F3"/>
         <Button Content=" Clear&#xA;Chunks" HorizontalAlignment="Left" Margin="72,339,0,0" VerticalAlignment="Top" Width="62" Height="40" Grid.Column="3" Click="Button_Click_3" Background="#99232323" Foreground="Red" BorderBrush="Red"/>
         <Label x:Name="pLabel" Content="" HorizontalAlignment="Left" Margin="261,346,0,0" VerticalAlignment="Top" Foreground="White"/>
@@ -354,7 +354,7 @@
         <CheckBox x:Name="CheckBoxReencode" Content="CheckBox" Grid.Column="3" HorizontalAlignment="Left" Margin="95,85,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
         <Label Content="Reencode Lossless" HorizontalAlignment="Left" Margin="1,79,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.ColumnSpan="2" Grid.Column="2"/>
         <CheckBox x:Name="CheckBoxResume" Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="72,312,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White" Grid.ColumnSpan="2"/>
-        <Label Content="Resume" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.Column="1"/>
+        <Label Content="Resume" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.Column="1" Height="25"/>
         <ComboBox x:Name="ComboBoxPasses" HorizontalAlignment="Left" Margin="95,121,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}" Grid.Column="3">
             <ComboBox.RenderTransform>
                 <TransformGroup>
@@ -427,8 +427,8 @@
         <TextBox x:Name="TextBoxOutputVideo" HorizontalAlignment="Left" Height="23" Margin="109,42,0,0" TextWrapping="Wrap" Text=" Output Video" VerticalAlignment="Top" Width="458" Grid.ColumnSpan="4" Background="#99232323" Foreground="White"/>
         <TextBox x:Name="TextBoxCustomSettings" HorizontalAlignment="Left" Height="65" Margin="14,220,0,0" TextWrapping="Wrap" Text="Custom Settings: Do NOT specify Input/Output | Do NOT specify 1/2-Pass -&gt; Use the above &quot;Passes&quot; Option!&#xD;&#xA;Example usage: &quot;--end-usage=q --cq-level=30 --cpu-used=5 --bit-depth=10&quot; (without &quot; &quot; !)" VerticalAlignment="Top" Width="670" Grid.ColumnSpan="4" Background="#99232323" Foreground="White" IsEnabled="False"/>
         <CheckBox x:Name="CheckBoxCustomSettings" Content="" HorizontalAlignment="Left" Margin="157,195,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
-        <Label Content="Enabel custom settings" HorizontalAlignment="Left" Margin="14,189,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
-        <CheckBox x:Name="CheckBoxEnableAudio" Content="" HorizontalAlignment="Left" Margin="100,312,0,0" VerticalAlignment="Top"/>
+        <Label Content="Enable custom settings" HorizontalAlignment="Left" Margin="14,189,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <CheckBox x:Name="CheckBoxEnableAudio" Content="" HorizontalAlignment="Left" Margin="100,312,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
         <Label Content="Enable Audio" HorizontalAlignment="Left" Margin="14,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <ComboBox x:Name="ComboBoxAudioCodec" HorizontalAlignment="Left" Margin="127,309,0,0" VerticalAlignment="Top" Width="100" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}">
             <ComboBox.RenderTransform>
@@ -446,12 +446,12 @@
                     <Setter Property="Opacity" Value="80"/>
                 </Style>
             </ComboBox.ItemContainerStyle>
-            <ComboBoxItem Content="Opus" Background="#FF383838" IsSelected="True" Foreground="#FFC9C9C9"/>
-            <ComboBoxItem Content="AAC CBR" Foreground="#FFC9C9C9"/>
-            <ComboBoxItem Content="Copy Audio" Foreground="#FFC9C9C9"/>
+            <ComboBoxItem Content="Opus" Background="#FF383838" IsSelected="True" Foreground="White"/>
+            <ComboBoxItem Content="AAC CBR" Foreground="White"/>
+            <ComboBoxItem Content="Copy Audio" Foreground="White"/>
             <ComboBoxItem Content="Opus 5.1"/>
         </ComboBox>
-        <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="21" Margin="292,308,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
+        <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="292,306,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}"/>
         <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
 
 

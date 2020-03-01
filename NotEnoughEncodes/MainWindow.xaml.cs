@@ -108,17 +108,14 @@ namespace NotEnoughEncodes
             if (openFileDialog.ShowDialog() == true)
                     TextBoxInputVideo.Text = openFileDialog.FileName;
 
-            //If settings.ini exist -> Set all Values
+            //If ffprobe exist -> Set all Values
             bool fileExist = File.Exists("ffprobe.exe");
 
             //Gets the Stream Framerate IF ffrpobe exist
             if (fileExist)
             {
-                getStreamFps(openFileDialog.FileName);
+                getStreamFps(TextBoxInputVideo.Text);
             }
-
-
-            
 
         }
 
@@ -134,6 +131,7 @@ namespace NotEnoughEncodes
         {
             //Start MainClass
             MainClass();
+
         }
 
         public static class Cancel
@@ -364,7 +362,7 @@ namespace NotEnoughEncodes
                                         startInfo.FileName = "cmd.exe";
                                         startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1"+ allSettingsAom +" --output=Chunks\\" + items + "-av1.ivf";
                                         process.StartInfo = startInfo;
-                                        //Console.WriteLine(startInfo.Arguments);
+                                        Console.WriteLine(startInfo.Arguments);
                                         process.Start();
                                         process.WaitForExit();
                                         //Progressbar +1
@@ -582,6 +580,7 @@ namespace NotEnoughEncodes
             TextBoxTileCols.IsEnabled = false;
             TextBoxTileRows.IsEnabled = false;
             TextBoxKeyframeInterval.IsEnabled = false;
+            TextBoxFramerate.IsEnabled = false;
 
         }
 
@@ -597,6 +596,7 @@ namespace NotEnoughEncodes
             TextBoxTileCols.IsEnabled = true;
             TextBoxTileRows.IsEnabled = true;
             TextBoxKeyframeInterval.IsEnabled = true;
+            TextBoxFramerate.IsEnabled = true;
 
         }
 
@@ -625,7 +625,8 @@ namespace NotEnoughEncodes
             }else if (ComboBoxAudioCodec.Text == "AAC CBR")
             {
 
-                allAudioSettings = " -c:a libfdk_aac -b:a " + audioBitrate +"k ";
+                allAudioSettings = " -c:a aac -b:a " + audioBitrate +"k ";
+                
 
             }
 
@@ -653,28 +654,30 @@ namespace NotEnoughEncodes
 
         public void getStreamFps(string fileinput)
         {
-
-            //Gets the Stream Framerate
             string input = "";
 
             input = '\u0022' + fileinput + '\u0022';
-
-            Process compiler = new Process();
-            compiler.StartInfo.FileName = "cmd.exe";
-            compiler.StartInfo.Arguments = "/C ffprobe.exe -i " + input + " -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate";
-            compiler.StartInfo.UseShellExecute = false;
-            compiler.StartInfo.RedirectStandardOutput = true;
-            compiler.Start();
-
-            //Console.WriteLine(compiler.StandardOutput.ReadToEnd());
-
-            string fpsOutput = compiler.StandardOutput.ReadToEnd();
-
-            //Console.WriteLine(fpsOutput);
-
+                    
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo()
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                FileName = "cmd.exe",
+                Arguments = "/C ffprobe.exe -i " + input + " -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate",
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            };
+            process.Start();
+            // Now read the value, parse to int and add 1 (from the original script)
+            //int online = int.Parse(process.StandardOutput.ReadToEnd()) + 1;
+            string fpsOutput = process.StandardOutput.ReadLine();
+            //string fpsOutputLine = new StringReader(fpsOutput).ReadLine();
             TextBoxFramerate.Text = fpsOutput;
+            //Console.WriteLine(fpsOutput);
+            process.WaitForExit();
 
-            compiler.WaitForExit();
         }
 
     }
