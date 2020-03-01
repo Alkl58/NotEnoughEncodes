@@ -624,6 +624,7 @@ namespace NotEnoughEncodes
         {
             Cancel.CancelAll = true;
             KillInstances();
+            MessageBox.Show("Encoding has been Cancled. Program is locked down. Restart the Program if you want to use it further. If you have an unfinished encode, which you want to continue, you have to restart the program and select the Resume mode!");
         }
 
         public void KillInstances()
