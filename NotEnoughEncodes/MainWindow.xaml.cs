@@ -30,6 +30,15 @@ namespace NotEnoughEncodes
 
             //Load Settings
             readSettings();
+
+            //If settings.ini exist -> Set all Values
+            bool fileExist = File.Exists("encoded.txt");
+
+            if (fileExist)
+            {
+                MessageBox.Show("May have detected unfished / uncleared Encode. If you want to resume an unfinished Job, check the Checkbox " + '\u0022' + "Resume" + '\u0022');
+            }
+
         }
 
         public void readSettings()
@@ -129,19 +138,30 @@ namespace NotEnoughEncodes
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            //Start MainClass
-            MainClass();
+
+            if (TextBoxInputVideo.Text == " Input Video")
+            {
+                MessageBox.Show("No Input File selected!");
+
+            }else if (TextBoxOutputVideo.Text == " Output Video")
+            {
+                MessageBox.Show("No Output Path specified!");
+            }
+            else if (TextBoxInputVideo.Text != " Input Video")
+            {
+                //Start MainClass
+                MainClass();
+            }
 
         }
 
-        public static class Cancel
+
+    public static class Cancel
         {
             //Public Cancel boolean
             public static Boolean CancelAll = false;
 
         }
-
-
 
         public void MainClass()
         {
@@ -222,6 +242,7 @@ namespace NotEnoughEncodes
             }
 
 
+
             //Parse Textbox Text to String for loop threading
             int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
             int cpuUsed = Int16.Parse(ComboBoxCpuUsed.Text);
@@ -293,8 +314,8 @@ namespace NotEnoughEncodes
             {
                 audioOutput = true;
             }
-               
 
+            
             //Starts the async task
             StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput);
             //Set Maximum of Progressbar
