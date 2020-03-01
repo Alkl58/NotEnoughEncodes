@@ -9,7 +9,7 @@ At the end it will [Concatenate](https://trac.ffmpeg.org/wiki/Concatenate) the c
 
 This tool is Windows only. For multiplatform and more features check out the CLI Tool [Av1an](https://github.com/master-of-zen/Av1an).
 
-![alt text](https://i.imgur.com/4vWpzzT.png)
+![alt text](https://i.imgur.com/mkfRQn8.png)
 
 ---
 
@@ -17,8 +17,8 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 
 ### Installation:
 
-1. Download [ffmpeg](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases).
-2. Create a new Folder and put all .exe files in them (ffmpeg, aomenc and NotEnoughEncodes.exe)
+1. Download [ffmpeg and ffprobe](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases).
+2. Create a new Folder and put all .exe files in them (ffmpeg, ffprobe, aomenc and NotEnoughEncodes.exe)
 
 ### Usage:
 1. Open NotEnoughEncodes.exe
@@ -27,7 +27,7 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 4. Edit the Encoding settings. (You can save the settings by clicking on "Save Settings")
 5. Click on "Start Encode".  
 
-NEE now has a resume feature, with which you can resume cancled encodes. (unfinished chunks will be overwritten!)
+NEE has a resume feature, with which you can resume cancled encodes. (unfinished chunks will be overwritten!)
 
 If you press on cancel, the program will terminate ALL aomenc and ffmpeg processes. Don't press it if you have other encodes/instances running!
 
