@@ -56,6 +56,15 @@ namespace NotEnoughEncodes
                     ComboBoxEncMode.Text = lines[10];
                     TextBoxChunkLength.Text = lines[11];
                 }
+                //Reads custom settings to settings_custom.ini
+                bool customFileExist = File.Exists("settings_custom.ini");
+                if (customFileExist)
+                {
+
+                    string[] linesa = System.IO.File.ReadAllLines("settings_custom.ini");
+                    TextBoxCustomSettings.Text = linesa[0];
+
+                }
 
             }
             catch { }
@@ -77,6 +86,15 @@ namespace NotEnoughEncodes
             string fps = TextBoxFramerate.Text;
             string encMode = this.ComboBoxEncMode.Text;
             string chunkLength = TextBoxChunkLength.Text;
+            string customSettings = TextBoxCustomSettings.Text;
+
+            //Saves custom settings in settings_custom.ini
+            if (CheckBoxCustomSettings.IsChecked == true)
+            {
+                string[] linescustom = { customSettings };
+                System.IO.File.WriteAllLines("settings_custom.ini", linescustom);
+            }
+
 
             string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength };
             System.IO.File.WriteAllLines("settings.ini", lines);
@@ -88,7 +106,7 @@ namespace NotEnoughEncodes
             //Open File Dialog
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-                textBlockPath.Text = openFileDialog.FileName;
+                    TextBoxInputVideo.Text = openFileDialog.FileName;
         }
 
         private void ButtonOutput_Click(object sender, RoutedEventArgs e)
@@ -96,7 +114,7 @@ namespace NotEnoughEncodes
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Matroska|*.mkv";
             if (saveFileDialog.ShowDialog() == true)
-                textBlockOutput.Text = saveFileDialog.FileName;
+                TextBoxOutputVideo.Text = saveFileDialog.FileName;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -107,6 +125,7 @@ namespace NotEnoughEncodes
 
         public static class Cancel
         {
+            //Public Cancel boolean
             public static Boolean CancelAll = false;
 
         }
@@ -124,10 +143,11 @@ namespace NotEnoughEncodes
             if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
 
-            //Start Splitting
-            String videoInput = textBlockPath.Text;
-            string videoOutput = textBlockOutput.Text;
+            //Sets the variable for input / output of video
+            string videoInput = TextBoxInputVideo.Text;
+            string videoOutput = TextBoxOutputVideo.Text;
 
+            //Start Splitting
             if (CheckBoxResume.IsChecked == false)
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
@@ -179,10 +199,6 @@ namespace NotEnoughEncodes
                     System.IO.File.Move(sdira + "\\out8.mkv", sdira + "\\out08.mkv");
                     System.IO.File.Move(sdira + "\\out9.mkv", sdira + "\\out09.mkv");
                     
-                    //Clears the Array
-                    //Array.Clear(chunks, 0, chunks.Length);
-                    //Reads all Files to array
-                    //chunks = Directory.GetFiles(sdira, "*.mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
                 }
 
             }
@@ -197,7 +213,6 @@ namespace NotEnoughEncodes
             int kfmaxdist = Int16.Parse(TextBoxKeyframeInterval.Text);
             int tilecols = Int16.Parse(TextBoxTileCols.Text);
             int tilerows = Int16.Parse(TextBoxTileRows.Text);
-            //int nrPasses = Int16.Parse(TextBoxPasses.Text);
             int nrPasses = Int16.Parse(ComboBoxPasses.Text);
             string fps = TextBoxFramerate.Text;
             string encMode = this.ComboBoxEncMode.Text;
@@ -217,9 +232,45 @@ namespace NotEnoughEncodes
                 //Set the Maximum Value of Progressbar
                 prgbar.Maximum = chunks.Count();
             }
-            
+
+
+            string finalEncodeMode = "";
+
+            //Sets the Encoding Mode
+            if (encMode == "q")
+            {
+                finalEncodeMode = " --end-usage=q --cq-level=" + cqLevel;
+
+            }
+            else if (encMode == "vbr")
+            {
+                //If vbr set finalEncodeMode
+                finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
+            }
+            else if (encMode == "cbr")
+            {
+                //If cbr set finalEncodeMode
+                finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
+            }
+
+
+            string allSettingsAom ="";
+            //Sets aom settings to custom or preset
+            if (CheckBoxCustomSettings.IsChecked == true)
+            {
+
+                allSettingsAom = " "+TextBoxCustomSettings.Text;
+                //Console.WriteLine(allSettingsAom);
+
+            }
+            else if (CheckBoxCustomSettings.IsChecked == false)
+            {
+                allSettingsAom = " --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist;
+                //Console.WriteLine(allSettingsAom);
+            }
+
             //Starts the async task
-            StartTask(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, nrPasses, fps, encMode, resume, videoOutput);
+            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput);
             //Set Maximum of Progressbar
             prgbar.Maximum = chunks.Count();
             //Set the Progresslabel to 0 out of Number of chunks, because people would think that it doesnt to anything
@@ -228,20 +279,18 @@ namespace NotEnoughEncodes
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume, string videoOutput)
+        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput)
         {
             //Run encode class async
-            await Task.Run(() => encode(maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilerows, tilecols, passes, fps, encMode, resume, videoOutput));
+            await Task.Run(() => encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput));
         }
 
         //Main Encoding Class
-        public void encode(int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilerows, int tilecols, int passes, string fps, string encMode, Boolean resume, string videoOutput)
+        public void encode(int maxConcurrency, int passes, string allSettingsAom, Boolean resume, string videoOutput)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
 
- 
-            
             //Create Array List with all Chunks
             string[] chunks;
             //Sets the Chunks directory
@@ -261,28 +310,9 @@ namespace NotEnoughEncodes
 
             }
 
-
             //Get Number of chunks for label of progressbar
             string labelstring = chunks.Count().ToString();
-
-            string finalEncodeMode = "";
-
-            //Sets the Encoding Mode
-            if (encMode == "q")
-            {
-                finalEncodeMode = " --end-usage=q --cq-level="+ cqLevel;
-
-            }else if (encMode == "vbr")
-            {
-                //If vbr set finalEncodeMode
-                finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
-            }else if (encMode == "cbr")
-            {
-                //If cbr set finalEncodeMode
-                finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
-            }
-
-            
+                                            
             
                 //Parallel Encoding - aka some blackmagic
                 using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
@@ -304,7 +334,7 @@ namespace NotEnoughEncodes
                                         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                         startInfo.FileName = "cmd.exe";
-                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1 --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
+                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1"+ allSettingsAom +" --output=Chunks\\" + items + "-av1.ivf";
                                         process.StartInfo = startInfo;
                                         //Console.WriteLine(startInfo.Arguments);
                                         process.Start();
@@ -332,7 +362,7 @@ namespace NotEnoughEncodes
                                         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                         startInfo.FileName = "cmd.exe";
-                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=NUL";
+                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log"+ allSettingsAom +" --output=NUL";
                                         process.StartInfo = startInfo;
                                         //Console.WriteLine(startInfo.Arguments);
                                         process.Start();
@@ -340,7 +370,7 @@ namespace NotEnoughEncodes
 
                                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                                         startInfo.FileName = "cmd.exe";
-                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --fps=" + fps + " --tile-columns=" + tilecols + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist + " --output=Chunks\\" + items + "-av1.ivf";
+                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log"+ allSettingsAom +" --output=Chunks\\" + items + "-av1.ivf";
                                         process.StartInfo = startInfo;
                                         //Console.WriteLine(startInfo.Arguments);
                                         process.Start();
@@ -481,5 +511,34 @@ namespace NotEnoughEncodes
             }
         }
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //Disables editing of preset settings if user wants to write custom settings
+            TextBoxCustomSettings.IsEnabled = true;
+            ComboBoxEncMode.IsEnabled = false;
+            TextBoxcqLevel.IsEnabled = false;
+            TextBoxEncThreads.IsEnabled = false;
+            ComboBoxBitdepth.IsEnabled = false;
+            ComboBoxCpuUsed.IsEnabled = false;
+            TextBoxTileCols.IsEnabled = false;
+            TextBoxTileRows.IsEnabled = false;
+            TextBoxKeyframeInterval.IsEnabled = false;
+
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            //Re-enables editing of preset settings
+            TextBoxCustomSettings.IsEnabled = false;
+            ComboBoxEncMode.IsEnabled = true;
+            TextBoxcqLevel.IsEnabled = true;
+            TextBoxEncThreads.IsEnabled = true;
+            ComboBoxBitdepth.IsEnabled = true;
+            ComboBoxCpuUsed.IsEnabled = true;
+            TextBoxTileCols.IsEnabled = true;
+            TextBoxTileRows.IsEnabled = true;
+            TextBoxKeyframeInterval.IsEnabled = true;
+
+        }
     }
 }
