@@ -1,8 +1,10 @@
 version: 1.0.{build}
+image: Visual Studio 2019
+configuration: Release
 build:
   verbosity: minimal
 artifacts:
-- path: '\NotEnoughEncodes\bin\Debug\'
+- path: '\NotEnoughEncodes\bin\Release\'
   name: NotEnoughEncodes.exe
 skip_commits:
   files:
