@@ -351,7 +351,7 @@
             <ComboBoxItem Content="cbr" Foreground="#FFC9C9C9"/>
         </ComboBox>
         <Label Content="Encode Mode" HorizontalAlignment="Left" Margin="134,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
-        <CheckBox x:Name="CheckBoxReencode" Content="CheckBox" Grid.Column="3" HorizontalAlignment="Left" Margin="95,85,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
+        <CheckBox x:Name="CheckBoxReencode" Content="CheckBox" Grid.Column="3" HorizontalAlignment="Left" Margin="95,85,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White" IsChecked="True"/>
         <Label Content="Reencode Lossless" HorizontalAlignment="Left" Margin="1,79,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.ColumnSpan="2" Grid.Column="2"/>
         <CheckBox x:Name="CheckBoxResume" Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="72,312,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White" Grid.ColumnSpan="2"/>
         <Label Content="Resume" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.Column="1" Height="25"/>
