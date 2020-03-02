@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using Path = System.IO.Path;
 
 namespace NotEnoughEncodes
 {
@@ -49,7 +48,7 @@ namespace NotEnoughEncodes
 
                 if (fileExist)
                 {
-                    string[] lines = System.IO.File.ReadAllLines("settings.ini");
+                    string[] lines = File.ReadAllLines("settings.ini");
 
                     TextBoxNumberWorkers.Text = lines[0];
                     ComboBoxCpuUsed.Text = lines[1];
@@ -68,7 +67,7 @@ namespace NotEnoughEncodes
                 bool customFileExist = File.Exists("settings_custom.ini");
                 if (customFileExist)
                 {
-                    string[] linesa = System.IO.File.ReadAllLines("settings_custom.ini");
+                    string[] linesa = File.ReadAllLines("settings_custom.ini");
                     TextBoxCustomSettings.Text = linesa[0];
                 }
             }
@@ -96,11 +95,11 @@ namespace NotEnoughEncodes
             if (CheckBoxCustomSettings.IsChecked == true)
             {
                 string[] linescustom = { customSettings };
-                System.IO.File.WriteAllLines("settings_custom.ini", linescustom);
+                File.WriteAllLines("settings_custom.ini", linescustom);
             }
 
             string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength };
-            System.IO.File.WriteAllLines("settings.ini", lines);
+            File.WriteAllLines("settings.ini", lines);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -229,9 +228,9 @@ namespace NotEnoughEncodes
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Start Splitting", "log.log");
                 }
 
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
 
@@ -290,7 +289,7 @@ namespace NotEnoughEncodes
 
                         if (count == 8)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
                         }
                     }
                 }
@@ -302,12 +301,12 @@ namespace NotEnoughEncodes
 
                         if (count == 8)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
                         }
 
                         if (count == 9)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
                         }
                     }
                 }
@@ -319,17 +318,17 @@ namespace NotEnoughEncodes
 
                         if (count == 8)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
                         }
 
                         if (count == 9)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
                         }
 
                         if (count == 10)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
                         }
                     }
                 }
@@ -341,22 +340,22 @@ namespace NotEnoughEncodes
 
                         if (count == 8)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
                         }
 
                         if (count == 9)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
                         }
 
                         if (count == 10)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
                         }
 
                         if (count == 11)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
                         }
                     }
                 }
@@ -369,26 +368,26 @@ namespace NotEnoughEncodes
                         //BTW are fu*** insane?
                         if (count == 8)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00000"));
                         }
 
                         if (count == 9)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
                         }
 
                         if (count == 10)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
                         }
 
                         if (count == 11)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
                         }
                         if (count == 12)
                         {
-                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
                         }
                     }
                 }
@@ -545,9 +544,9 @@ namespace NotEnoughEncodes
                             {
                                 if (passes == 1)
                                 {
-                                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                    Process process = new Process();
+                                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1" + allSettingsAom + " --output=Chunks\\" + items + "-av1.ivf";
                                     process.StartInfo = startInfo;
@@ -571,9 +570,9 @@ namespace NotEnoughEncodes
                                 }
                                 else if (passes == 2)
                                 {
-                                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                    Process process = new Process();
+                                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log" + allSettingsAom + " --output=NUL";
                                     process.StartInfo = startInfo;
@@ -581,7 +580,7 @@ namespace NotEnoughEncodes
                                         process.Start();
                                     process.WaitForExit();
 
-                                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log" + allSettingsAom + " --output=Chunks\\" + items + "-av1.ivf";
                                     process.StartInfo = startInfo;
@@ -631,9 +630,9 @@ namespace NotEnoughEncodes
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
 
                 //Lists all ivf files in mylist.txt
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
 
@@ -646,7 +645,7 @@ namespace NotEnoughEncodes
                 if (audioOutput == false)
                 {
                     //Concat the Videos
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
 
@@ -659,7 +658,7 @@ namespace NotEnoughEncodes
                 else if (audioOutput == true)
                 {
                     //Concat the Videos
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
 
@@ -670,7 +669,7 @@ namespace NotEnoughEncodes
                     process.WaitForExit();
 
                     //Concat the Videos
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
                     startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i Audio\\audio.mkv -c copy " + '\u0022' + outputfilename + '\u0022';
@@ -864,9 +863,9 @@ namespace NotEnoughEncodes
             if (!Directory.Exists(Path.Combine(currentPath, "Audio")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Audio"));
 
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
 
             //FFmpeg Arguments
@@ -891,12 +890,12 @@ namespace NotEnoughEncodes
 
             input = '\u0022' + fileinput + '\u0022';
 
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo = new System.Diagnostics.ProcessStartInfo()
+            Process process = new Process();
+            process.StartInfo = new ProcessStartInfo()
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
                 Arguments = "/C ffprobe.exe -i " + input + " -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate",
                 RedirectStandardError = true,
