@@ -77,19 +77,19 @@ namespace NotEnoughEncodes
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             //Saves all Current Settings to a file
+            string customSettings = TextBoxCustomSettings.Text;
             string maxConcurrency = TextBoxNumberWorkers.Text;
-            string cpuUsed = ComboBoxCpuUsed.Text;
-            string bitDepth = ComboBoxBitdepth.Text;
-            string encThreads = TextBoxEncThreads.Text;
-            string cqLevel = TextBoxcqLevel.Text;
             string kfmaxdist = TextBoxKeyframeInterval.Text;
+            string chunkLength = TextBoxChunkLength.Text;
+            string encThreads = TextBoxEncThreads.Text;
+            string bitDepth = ComboBoxBitdepth.Text;
             string tilecols = TextBoxTileCols.Text;
             string tilerows = TextBoxTileRows.Text;
+            string encMode = ComboBoxEncMode.Text;
+            string cpuUsed = ComboBoxCpuUsed.Text;
             string nrPasses = ComboBoxPasses.Text;
+            string cqLevel = TextBoxcqLevel.Text;
             string fps = TextBoxFramerate.Text;
-            string encMode = this.ComboBoxEncMode.Text;
-            string chunkLength = TextBoxChunkLength.Text;
-            string customSettings = TextBoxCustomSettings.Text;
 
             //Saves custom settings in settings_custom.ini
             if (CheckBoxCustomSettings.IsChecked == true)
@@ -211,269 +211,35 @@ namespace NotEnoughEncodes
             //Checks if Chunks folder exist, if no it creates Chunks folder
             if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
-            if (CheckBoxLogging.IsChecked == true)
-            {
-                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Checked or Created Chunks folder", "log.log");
-            }
 
             //Sets the variable for input / output of video
-            string videoInput = TextBoxInputVideo.Text;
+            string customSettings = TextBoxCustomSettings.Text;
+            string audioBitrate = TextBoxAudioBitrate.Text;
             string videoOutput = TextBoxOutputVideo.Text;
+            string chunkLength = TextBoxChunkLength.Text;
+            string audioCodec = ComboBoxAudioCodec.Text;
+            string videoInput = TextBoxInputVideo.Text;
+            string encMode = ComboBoxEncMode.Text;
+            string fps = TextBoxFramerate.Text;
 
-            //Start Splitting
-            if (CheckBoxResume.IsChecked == false)
-            {
-                if (CheckBoxLogging.IsChecked == true)
-                {
-                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Start Splitting", "log.log");
-                }
-
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                //FFmpeg Arguments
-
-                //Checks if Source needs to be reencoded
-                if (CheckBoxReencode.IsChecked == false)
-                {
-                    if (CheckBoxLogging.IsChecked == true)
-                    {
-                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting without reencoding", "log.log");
-                    }
-                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vcodec copy -f segment -segment_time " + TextBoxChunkLength.Text + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
-                }
-                else if (CheckBoxReencode.IsChecked == true)
-                {
-                    if (CheckBoxLogging.IsChecked == true)
-                    {
-                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting with reencoding", "log.log");
-                    }
-                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -c:v utvideo -f segment -segment_time " + TextBoxChunkLength.Text + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
-                }
-                //Console.WriteLine(startInfo.Arguments);
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit();
-            }
-
-            //Audio Encoding
-            if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
-            {
-                encodeAudio(videoInput);
-            }
-
-            //Create Array List with all Chunks
-            string[] chunks;
-            //Sets the Chunks directory
-            string sdira = currentPath + "\\Chunks";
-            //Add all Files in Chunks Folder to array
-            chunks = Directory.GetFiles(sdira, "*mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
-
-            if (CheckBoxResume.IsChecked == false)
-            {
-                DirectoryInfo d = new DirectoryInfo(currentPath + "\\Chunks");
-                FileInfo[] infos = d.GetFiles();
-
-                int numberOfChunks = chunks.Count();
-
-                //outx.mkv = 8 | outxx.mkv = 9 (99) | outxxx.mkv = 10 (999) | outxxxx.mkv = 11 (9999) | outxxxxx.mkv = 12 (99999)
-
-                //int numberOfChunks = 20000;
-
-                if (numberOfChunks >= 10 && numberOfChunks <= 99)
-                {
-                    foreach (FileInfo f in infos)
-                    {
-                        int count = f.ToString().Count();
-
-                        if (count == 8)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
-                        }
-                    }
-                }
-                else if (numberOfChunks >= 100 && numberOfChunks <= 999) //If you have more than 100 Chunks and less than 999
-                {
-                    foreach (FileInfo f in infos)
-                    {
-                        int count = f.ToString().Count();
-
-                        if (count == 8)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
-                        }
-
-                        if (count == 9)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
-                        }
-                    }
-                }
-                else if (numberOfChunks >= 1000 && numberOfChunks <= 9999) //If you have more than 1.000 Chunks and less than 9.999
-                {
-                    foreach (FileInfo f in infos)
-                    {
-                        int count = f.ToString().Count();
-
-                        if (count == 8)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
-                        }
-
-                        if (count == 9)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
-                        }
-
-                        if (count == 10)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
-                        }
-                    }
-                }
-                else if (numberOfChunks >= 10000 && numberOfChunks <= 99999) //If you have more than 10.000 Chunks and less than 99.999
-                {
-                    foreach (FileInfo f in infos)
-                    {
-                        int count = f.ToString().Count();
-
-                        if (count == 8)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
-                        }
-
-                        if (count == 9)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
-                        }
-
-                        if (count == 10)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
-                        }
-
-                        if (count == 11)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
-                        }
-                    }
-                }
-                else if (numberOfChunks >= 100000 && numberOfChunks <= 999999)
-                {
-                    foreach (FileInfo f in infos)
-                    {
-                        int count = f.ToString().Count();
-                        //If you have more than 100.000 Chunks and less than 999.999
-                        //BTW are fu*** insane?
-                        if (count == 8)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00000"));
-                        }
-
-                        if (count == 9)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
-                        }
-
-                        if (count == 10)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
-                        }
-
-                        if (count == 11)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
-                        }
-                        if (count == 12)
-                        {
-                            File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
-                        }
-                    }
-                }
-            }
-
-            //Parse Textbox Text to String for loop threading
             int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
-            int cpuUsed = Int16.Parse(ComboBoxCpuUsed.Text);
-            int bitDepth = Int16.Parse(ComboBoxBitdepth.Text);
-            int encThreads = Int16.Parse(TextBoxEncThreads.Text);
-            int cqLevel = Int16.Parse(TextBoxcqLevel.Text);
             int kfmaxdist = Int16.Parse(TextBoxKeyframeInterval.Text);
+            int encThreads = Int16.Parse(TextBoxEncThreads.Text);
+            int bitDepth = Int16.Parse(ComboBoxBitdepth.Text);
+            int cpuUsed = Int16.Parse(ComboBoxCpuUsed.Text);
+            int cqLevel = Int16.Parse(TextBoxcqLevel.Text);
+
             int tilecols = Int16.Parse(TextBoxTileCols.Text);
             int tilerows = Int16.Parse(TextBoxTileRows.Text);
             int nrPasses = Int16.Parse(ComboBoxPasses.Text);
-            string fps = TextBoxFramerate.Text;
-            string encMode = this.ComboBoxEncMode.Text;
+
+            bool customSettingsbool = false;
+            bool audioOutput = false;
+            bool reencode = false;
+            bool logging = false;
             bool resume = false;
 
-            //Sets Resume Mode
-            if (CheckBoxResume.IsChecked == true)
-            {
-                resume = true;
-                if (CheckBoxLogging.IsChecked == true)
-                {
-                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode Started", "log.log");
-                }
-
-                foreach (string line in File.ReadLines("encoded.txt"))
-                {
-                    //Removes all Items from Arraylist which are in encoded.txt
-                    chunks = chunks.Where(s => s != line).ToArray();
-                    if (CheckBoxLogging.IsChecked == true)
-                    {
-                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode - Deleting " + line + " from Array", "log.log");
-                    }
-                }
-                //Set the Maximum Value of Progressbar
-                prgbar.Maximum = chunks.Count();
-            }
-
-            string finalEncodeMode = "";
-
-            //Sets the Encoding Mode
-            if (encMode == "q")
-            {
-                if (CheckBoxLogging.IsChecked == true)
-                {
-                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to q", "log.log");
-                }
-                finalEncodeMode = " --end-usage=q --cq-level=" + cqLevel;
-            }
-            else if (encMode == "vbr")
-            {
-                //If vbr set finalEncodeMode
-                if (CheckBoxLogging.IsChecked == true)
-                {
-                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to vbr", "log.log");
-                }
-                finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
-            }
-            else if (encMode == "cbr")
-            {
-                //If cbr set finalEncodeMode
-                if (CheckBoxLogging.IsChecked == true)
-                {
-                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to cbr", "log.log");
-                }
-                finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
-            }
-
-            string allSettingsAom = "";
-            //Sets aom settings to custom or preset
-            if (CheckBoxCustomSettings.IsChecked == true)
-            {
-                allSettingsAom = " " + TextBoxCustomSettings.Text;
-                //Console.WriteLine(allSettingsAom);
-            }
-            else if (CheckBoxCustomSettings.IsChecked == false)
-            {
-                allSettingsAom = " --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist;
-                //Console.WriteLine(allSettingsAom);
-            }
-
             //Sets the boolean if audio should be included -> Concat() needs this value
-            bool audioOutput = false;
             if (CheckBoxEnableAudio.IsChecked == true)
             {
                 if (CheckBoxLogging.IsChecked == true)
@@ -483,18 +249,299 @@ namespace NotEnoughEncodes
                 audioOutput = true;
             }
 
+            if (CheckBoxResume.IsChecked == true)
+            {
+                resume = true;
+            }
+
+            if (CheckBoxLogging.IsChecked == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Checked or Created Chunks folder", "log.log");
+                logging = true;
+            }
+            if (CheckBoxReencode.IsChecked == true)
+            {
+                reencode = true;
+            }
+            if (CheckBoxCustomSettings.IsChecked == true)
+            {
+                customSettingsbool = true;
+            }
+
+            Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput);
+        }
+
+        private async void Async(string videoInput, string currentPath, string videoOutput, bool resume, bool logging, bool reencode, string chunkLength, string audioBitrate, string audioCodec, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
+        {
+            await Task.Run(() => Splitting(videoInput, resume, logging, reencode, chunkLength));
+            //Audio Encoding
+            if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
+            {
+                await Task.Run(() => encodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath));
+            }
+            if (CheckBoxResume.IsChecked == false)
+            {
+                await Task.Run(() => rename(currentPath));
+            }
+            await Task.Run(() => encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput));
+        }
+
+        private void Splitting(string videoInput, bool resume, bool logging, bool reencode, string chunkLength)
+        {
+            //Start Splitting
+            if (resume == false)
+            {
+                if (logging == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Start Splitting", "log.log");
+                }
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Started Splitting...", DispatcherPriority.Background);
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                //FFmpeg Arguments
+
+                //Checks if Source needs to be reencoded
+                if (reencode == false)
+                {
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting without reencoding", "log.log");
+                    }
+                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vcodec copy -f segment -segment_time " + chunkLength + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
+                }
+                else if (reencode == true)
+                {
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting with reencoding", "log.log");
+                    }
+                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -c:v utvideo -f segment -segment_time " + chunkLength + " -an " + '\u0022' + "Chunks\\out%0d.mkv" + '\u0022';
+                }
+                //Console.WriteLine(startInfo.Arguments);
+                process.StartInfo = startInfo;
+                process.Start();
+                process.WaitForExit();
+            }
+        }
+
+        private void rename(string currentPath)
+        {
+            //Create Array List with all Chunks
+            string[] chunks;
+            //Sets the Chunks directory
+            string sdira = currentPath + "\\Chunks";
+            //Add all Files in Chunks Folder to array
+            chunks = Directory.GetFiles(sdira, "*mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
+            DirectoryInfo d = new DirectoryInfo(currentPath + "\\Chunks");
+            FileInfo[] infos = d.GetFiles();
+
+            int numberOfChunks = chunks.Count();
+
+            //outx.mkv = 8 | outxx.mkv = 9 (99) | outxxx.mkv = 10 (999) | outxxxx.mkv = 11 (9999) | outxxxxx.mkv = 12 (99999)
+
+            //int numberOfChunks = 20000;
+
+            if (numberOfChunks >= 10 && numberOfChunks <= 99)
+            {
+                foreach (FileInfo f in infos)
+                {
+                    int count = f.ToString().Count();
+
+                    if (count == 8)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                    }
+                }
+            }
+            else if (numberOfChunks >= 100 && numberOfChunks <= 999) //If you have more than 100 Chunks and less than 999
+            {
+                foreach (FileInfo f in infos)
+                {
+                    int count = f.ToString().Count();
+
+                    if (count == 8)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                    }
+
+                    if (count == 9)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                    }
+                }
+            }
+            else if (numberOfChunks >= 1000 && numberOfChunks <= 9999) //If you have more than 1.000 Chunks and less than 9.999
+            {
+                foreach (FileInfo f in infos)
+                {
+                    int count = f.ToString().Count();
+
+                    if (count == 8)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                    }
+
+                    if (count == 9)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                    }
+
+                    if (count == 10)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                    }
+                }
+            }
+            else if (numberOfChunks >= 10000 && numberOfChunks <= 99999) //If you have more than 10.000 Chunks and less than 99.999
+            {
+                foreach (FileInfo f in infos)
+                {
+                    int count = f.ToString().Count();
+
+                    if (count == 8)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                    }
+
+                    if (count == 9)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                    }
+
+                    if (count == 10)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                    }
+
+                    if (count == 11)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                    }
+                }
+            }
+            else if (numberOfChunks >= 100000 && numberOfChunks <= 999999)
+            {
+                foreach (FileInfo f in infos)
+                {
+                    int count = f.ToString().Count();
+                    //If you have more than 100.000 Chunks and less than 999.999
+                    //BTW are fu*** insane?
+                    if (count == 8)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00000"));
+                    }
+
+                    if (count == 9)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                    }
+
+                    if (count == 10)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                    }
+
+                    if (count == 11)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                    }
+                    if (count == 12)
+                    {
+                        File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                    }
+                }
+            }
+        }
+
+        private void encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
+        {
+            //Create Array List with all Chunks
+            string[] chunks;
+            //Sets the Chunks directory
+            string sdira = currentPath + "\\Chunks";
+            //Add all Files in Chunks Folder to array
+            chunks = Directory.GetFiles(sdira, "*mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
+            //Parse Textbox Text to String for loop threading
+
+            //Sets Resume Mode
+            if (resume == true)
+            {
+                if (logging == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode Started", "log.log");
+                }
+
+                foreach (string line in File.ReadLines("encoded.txt"))
+                {
+                    //Removes all Items from Arraylist which are in encoded.txt
+                    chunks = chunks.Where(s => s != line).ToArray();
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode - Deleting " + line + " from Array", "log.log");
+                    }
+                }
+                //Set the Maximum Value of Progressbar
+                prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
+            }
+
+            string finalEncodeMode = "";
+
+            //Sets the Encoding Mode
+            if (encMode == "q")
+            {
+                if (logging == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to q", "log.log");
+                }
+                finalEncodeMode = " --end-usage=q --cq-level=" + cqLevel;
+            }
+            else if (encMode == "vbr")
+            {
+                //If vbr set finalEncodeMode
+                if (logging == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to vbr", "log.log");
+                }
+                finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
+            }
+            else if (encMode == "cbr")
+            {
+                //If cbr set finalEncodeMode
+                if (logging == true)
+                {
+                    WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to cbr", "log.log");
+                }
+                finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
+            }
+
+            string allSettingsAom = "";
+            //Sets aom settings to custom or preset
+            if (customSettingsbool == true)
+            {
+                allSettingsAom = " " + customSettings;
+                //Console.WriteLine(allSettingsAom);
+            }
+            else if (customSettingsbool == false)
+            {
+                allSettingsAom = " --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist;
+                //Console.WriteLine(allSettingsAom);
+            }
+
             //Starts the async task
-            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput);
+            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput, logging);
             //Set Maximum of Progressbar
-            prgbar.Maximum = chunks.Count();
+            prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
+            //prgbar.Maximum = chunks.Count();
             //Set the Progresslabel to 0 out of Number of chunks, because people would think that it doesnt to anything
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "0 / " + prgbar.Maximum, DispatcherPriority.Background);
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput)
+        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput, bool logging)
         {
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Async Task started", "log.log");
             }
@@ -554,14 +601,14 @@ namespace NotEnoughEncodes
                                     process.Start();
                                     process.WaitForExit();
 
-                                        //Progressbar +1
-                                        prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
-                                        //Label of Progressbar = Progressbar
-                                        pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
+                                    //Progressbar +1
+                                    prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
+                                    //Label of Progressbar = Progressbar
+                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                     if (Cancel.CancelAll == false)
                                     {
-                                            //Write Item to file for later resume if something bad happens
-                                            WriteToFileThreadSafe(items, "encoded.txt");
+                                        //Write Item to file for later resume if something bad happens
+                                        WriteToFileThreadSafe(items, "encoded.txt");
                                     }
                                     else
                                     {
@@ -576,24 +623,24 @@ namespace NotEnoughEncodes
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=Chunks\\" + items + "_stats.log" + allSettingsAom + " --output=NUL";
                                     process.StartInfo = startInfo;
-                                        //Console.WriteLine(startInfo.Arguments);
-                                        process.Start();
+                                    //Console.WriteLine(startInfo.Arguments);
+                                    process.Start();
                                     process.WaitForExit();
 
                                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf=Chunks\\" + items + "_stats.log" + allSettingsAom + " --output=Chunks\\" + items + "-av1.ivf";
                                     process.StartInfo = startInfo;
-                                        //Console.WriteLine(startInfo.Arguments);
-                                        process.Start();
+                                    //Console.WriteLine(startInfo.Arguments);
+                                    process.Start();
                                     process.WaitForExit();
 
                                     prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                     pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                     if (Cancel.CancelAll == false)
                                     {
-                                            //Write Item to file for later resume if something bad happens
-                                            WriteToFileThreadSafe(items, "encoded.txt");
+                                        //Write Item to file for later resume if something bad happens
+                                        WriteToFileThreadSafe(items, "encoded.txt");
                                     }
                                     else
                                     {
@@ -773,77 +820,74 @@ namespace NotEnoughEncodes
             TextBoxFramerate.IsEnabled = true;
         }
 
-        public void encodeAudio(string videoInput)
+        public void encodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
         {
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding started", "log.log");
             }
-            string audioBitrate = "";
-
-            audioBitrate = TextBoxAudioBitrate.Text;
 
             string allAudioSettings = "";
             //Sets Settings for Audio Encoding
-            if (ComboBoxAudioCodec.Text == "Copy Audio")
+            if (audioCodec == "Copy Audio")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to Audio Copy", "log.log");
                 }
                 allAudioSettings = " -c:a copy";
             }
-            else if (ComboBoxAudioCodec.Text == "Opus")
+            else if (audioCodec == "Opus")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to libopus", "log.log");
                 }
                 allAudioSettings = " -c:a libopus -b:a " + audioBitrate + "k ";
             }
-            else if (ComboBoxAudioCodec.Text == "Opus 5.1")
+            else if (audioCodec == "Opus 5.1")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to libopus 5.1", "log.log");
                 }
                 allAudioSettings = " -c:a libopus -b:a " + audioBitrate + "k -af channelmap=channel_layout=5.1";
             }
-            else if (ComboBoxAudioCodec.Text == "AAC CBR")
+            else if (audioCodec == "AAC CBR")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to AAC CBR", "log.log");
                 }
                 allAudioSettings = " -c:a aac -b:a " + audioBitrate + "k ";
             }
-            else if (ComboBoxAudioCodec.Text == "AC3")
+            else if (audioCodec == "AC3")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to AC3 CBR", "log.log");
                 }
                 allAudioSettings = " -c:a ac3 -b:a " + audioBitrate + "k ";
             }
-            else if (ComboBoxAudioCodec.Text == "FLAC")
+            else if (audioCodec == "FLAC")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to FLAC", "log.log");
                 }
                 allAudioSettings = " -c:a flac ";
             }
-            else if (ComboBoxAudioCodec.Text == "MP3 CBR")
+            else if (audioCodec == "MP3 CBR")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to MP3 CBR", "log.log");
                 }
                 allAudioSettings = " -c:a libmp3lame -b:a " + audioBitrate + "k ";
             }
-            else if (ComboBoxAudioCodec.Text == "MP3 VBR")
+            else if (audioCodec == "MP3 VBR")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to MP3 CBR", "log.log");
                 }
@@ -857,8 +901,6 @@ namespace NotEnoughEncodes
                 }
             }
 
-            //Sets the working directory
-            string currentPath = Directory.GetCurrentDirectory();
             //Creates Audio Folder
             if (!Directory.Exists(Path.Combine(currentPath, "Audio")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Audio"));
@@ -869,12 +911,12 @@ namespace NotEnoughEncodes
             startInfo.FileName = "cmd.exe";
 
             //FFmpeg Arguments
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started Audio Encoding", "log.log");
             }
             startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + allAudioSettings + " -vn " + '\u0022' + "Audio\\audio.mkv" + '\u0022';
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Ended", "log.log");
             }
@@ -902,10 +944,7 @@ namespace NotEnoughEncodes
                 RedirectStandardOutput = true
             };
             process.Start();
-            // Now read the value, parse to int and add 1 (from the original script)
-            //int online = int.Parse(process.StandardOutput.ReadToEnd()) + 1;
             string fpsOutput = process.StandardOutput.ReadLine();
-            //string fpsOutputLine = new StringReader(fpsOutput).ReadLine();
             TextBoxFramerate.Text = fpsOutput;
             //Console.WriteLine(fpsOutput);
             process.WaitForExit();
