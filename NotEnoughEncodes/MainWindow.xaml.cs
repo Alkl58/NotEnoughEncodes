@@ -138,6 +138,35 @@ namespace NotEnoughEncodes
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            if (Cancel.CancelAll == true && CheckBoxResume.IsChecked == false)
+            {
+                //Asks the user if he wants to resume the process.
+                if (MessageBox.Show("It appears that you canceled a previous encode. If you want to resume an cancelled encode, press Yes.",
+                    "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    CheckBoxResume.IsChecked = true;
+                    Cancel.CancelAll = false;
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Resuming...", DispatcherPriority.Background);
+                    prgbar.Maximum = 100;
+                    prgbar.Value = 0;
+                }
+                else
+                {
+                    Cancel.CancelAll = false;
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Starting...", DispatcherPriority.Background);
+                    prgbar.Maximum = 100;
+                    prgbar.Value = 0;
+                }
+
+            }else if (Cancel.CancelAll == true && CheckBoxResume.IsChecked == true)
+            {
+                Cancel.CancelAll = false;
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Resuming...", DispatcherPriority.Background);
+                prgbar.Maximum = 100;
+                prgbar.Value = 0;
+            }
+            
+
             if (CheckBoxLogging.IsChecked == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Clicked on Start Encode", "log.log");
@@ -187,8 +216,10 @@ namespace NotEnoughEncodes
 
         }
 
+
         public void MainClass()
         {
+
             if (CheckBoxLogging.IsChecked == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " MainClass started", "log.log");
@@ -255,7 +286,7 @@ namespace NotEnoughEncodes
 
 
             //Audio Encoding
-            if (CheckBoxEnableAudio.IsChecked == true)
+            if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
                 encodeAudio(videoInput);
             }
@@ -624,7 +655,8 @@ namespace NotEnoughEncodes
         {
             Cancel.CancelAll = true;
             KillInstances();
-            MessageBox.Show("Encoding has been Cancled. Program is locked down. Restart the Program if you want to use it further. If you have an unfinished encode, which you want to continue, you have to restart the program and select the Resume mode!");
+            pLabel.Dispatcher.Invoke(() => pLabel.Content = "Cancled!", DispatcherPriority.Background);
+
         }
 
         public void KillInstances()
