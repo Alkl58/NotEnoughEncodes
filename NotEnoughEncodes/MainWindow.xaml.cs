@@ -157,6 +157,27 @@ namespace NotEnoughEncodes
                 prgbar.Value = 0;
             }
 
+            bool folderExist = Directory.Exists("Chunks");
+
+            //Gets the Stream Framerate IF ffrpobe exist
+            if (folderExist)
+            {
+                if (MessageBox.Show("It appears that you finished a previous encode but forgot to delete the temp files. To let the program delete the files, press Yes. Press No if pressing on Encode was a mistake.",
+                        "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    DeleteTempFiles();
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
+                    //This will be set if you Press Encode after a already finished encode
+                    prgbar.Maximum = 100;
+                    prgbar.Value = 0;
+
+                }
+                else
+                {
+                    Cancel.CancelAll = true;
+                }
+            }
+
             if (CheckBoxLogging.IsChecked == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Clicked on Start Encode", "log.log");
@@ -186,8 +207,15 @@ namespace NotEnoughEncodes
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started MainClass()", "log.log");
                 }
-                //Start MainClass
-                MainClass();
+                if (Cancel.CancelAll == false)
+                {
+                    //Start MainClass
+                    MainClass();
+                }
+                else
+                {
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Process has been canceled!", DispatcherPriority.Background);
+                }
             }
         }
 
@@ -195,6 +223,11 @@ namespace NotEnoughEncodes
         {
             //Public Cancel boolean
             public static bool CancelAll = false;
+        }
+
+        public static class Delete
+        {
+            public static bool Deleted = false;
         }
 
         public void MainClass()
@@ -756,6 +789,12 @@ namespace NotEnoughEncodes
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
+            DeleteTempFiles();
+        }
+
+        private void DeleteTempFiles()
+        {
+            Delete.Deleted = true;
             try
             {
                 //Delete Files, because of lazy dump****
