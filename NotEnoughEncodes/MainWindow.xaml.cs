@@ -301,28 +301,142 @@ namespace NotEnoughEncodes
 
             if (CheckBoxResume.IsChecked == false)
             {
-                //Checks if there is more than 9 Chunks, inorder to rename them, because later in order to concat, it has to be sortet (Values from xx-xx instead of x-xx)
-                if (chunks.Count() >= 10)
+                DirectoryInfo d = new DirectoryInfo(currentPath + "\\Chunks");
+                FileInfo[] infos = d.GetFiles();
+
+                int numberOfChunks = chunks.Count();
+
+                //outx.mkv = 8 | outxx.mkv = 9 (99) | outxxx.mkv = 10 (999) | outxxxx.mkv = 11 (9999) | outxxxxx.mkv = 12 (99999)
+
+                //int numberOfChunks = 20000;
+
+                if (numberOfChunks >= 10 && numberOfChunks <= 99)
                 {
-                    if (CheckBoxLogging.IsChecked == true)
+                    foreach (FileInfo f in infos)
                     {
-                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Renaming Chunk Files", "log.log");
+
+                        int count = f.ToString().Count();
+
+                        if (count == 8)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                        }
+
                     }
-                    System.IO.File.Move(sdira + "\\out0.mkv", sdira + "\\out00.mkv");
-                    System.IO.File.Move(sdira + "\\out1.mkv", sdira + "\\out01.mkv");
-                    System.IO.File.Move(sdira + "\\out2.mkv", sdira + "\\out02.mkv");
-                    System.IO.File.Move(sdira + "\\out3.mkv", sdira + "\\out03.mkv");
-                    System.IO.File.Move(sdira + "\\out4.mkv", sdira + "\\out04.mkv");
-                    System.IO.File.Move(sdira + "\\out5.mkv", sdira + "\\out05.mkv");
-                    System.IO.File.Move(sdira + "\\out6.mkv", sdira + "\\out06.mkv");
-                    System.IO.File.Move(sdira + "\\out7.mkv", sdira + "\\out07.mkv");
-                    System.IO.File.Move(sdira + "\\out8.mkv", sdira + "\\out08.mkv");
-                    System.IO.File.Move(sdira + "\\out9.mkv", sdira + "\\out09.mkv");
-                    
+
+                }
+                else if (numberOfChunks >= 100 && numberOfChunks <= 999) //If you have more than 100 Chunks and less than 999
+                {
+                    foreach (FileInfo f in infos)
+                    {
+                        int count = f.ToString().Count();
+
+                        if (count == 8)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                        }
+
+                        if (count == 9)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                        }
+
+                    }
+
+                }
+                else if (numberOfChunks >= 1000 && numberOfChunks <= 9999) //If you have more than 1.000 Chunks and less than 9.999
+                {
+
+                    foreach (FileInfo f in infos)
+                    {
+                        int count = f.ToString().Count();
+
+                        if (count == 8)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                        }
+
+                        if (count == 9)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                        }
+
+                        if (count == 10)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                        }
+
+                    }
+
+                }
+                else if (numberOfChunks >= 10000 && numberOfChunks <= 99999) //If you have more than 10.000 Chunks and less than 99.999
+                {
+                    foreach (FileInfo f in infos)
+                    {
+                        int count = f.ToString().Count();
+
+                        if (count == 8)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                        }
+
+                        if (count == 9)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                        }
+
+                        if (count == 10)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                        }
+
+                        if (count == 11)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                        }
+
+                    }
+
+                }
+                else if (numberOfChunks >= 100000 && numberOfChunks <= 999999)
+                {
+
+                    foreach (FileInfo f in infos)
+                    {
+                        int count = f.ToString().Count();
+                        //If you have more than 100.000 Chunks and less than 999.999
+                        //BTW are fu*** insane?
+                        if (count == 8)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00000"));
+                        }
+
+                        if (count == 9)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0000"));
+                        }
+
+                        if (count == 10)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out000"));
+                        }
+
+                        if (count == 11)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out00"));
+                        }
+                        if (count == 12)
+                        {
+                            System.IO.File.Move(d + "\\" + f, d + "\\" + f.Name.Replace("out", "out0"));
+                        }
+
+                    }
+
+
                 }
 
-            }
 
+            }
 
 
             //Parse Textbox Text to String for loop threading
