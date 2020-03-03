@@ -13,6 +13,10 @@ namespace NotEnoughEncodes
 {
     public partial class MainWindow : Window
     {
+        public static bool logging;
+        public static bool shutdownafterencode;
+        public static bool batchEncoding;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -177,7 +181,7 @@ namespace NotEnoughEncodes
                 }
             }
 
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Clicked on Start Encode", "log.log");
             }
@@ -186,7 +190,7 @@ namespace NotEnoughEncodes
             {
                 MessageBox.Show("No Input File selected!");
 
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " No Input File selected!", "log.log");
                 }
@@ -195,14 +199,14 @@ namespace NotEnoughEncodes
             {
                 MessageBox.Show("No Output Path specified!");
 
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " No Output Path specified!", "log.log");
                 }
             }
             else if (TextBoxInputVideo.Text != " Input Video")
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started MainClass()", "log.log");
                 }
@@ -231,7 +235,7 @@ namespace NotEnoughEncodes
 
         public void MainClass()
         {
-            if (CheckBoxLogging.IsChecked == true)
+            if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " MainClass started", "log.log");
             }
@@ -268,13 +272,17 @@ namespace NotEnoughEncodes
             bool customSettingsbool = false;
             bool audioOutput = false;
             bool reencode = false;
-            bool logging = false;
             bool resume = false;
+
+            if (logging == true)
+            {
+                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Checked or Created Chunks folder", "log.log");
+            }
 
             //Sets the boolean if audio should be included -> Concat() needs this value
             if (CheckBoxEnableAudio.IsChecked == true)
             {
-                if (CheckBoxLogging.IsChecked == true)
+                if (logging == true)
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Audio Boolean to true", "log.log");
                 }
@@ -286,11 +294,6 @@ namespace NotEnoughEncodes
                 resume = true;
             }
 
-            if (CheckBoxLogging.IsChecked == true)
-            {
-                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Checked or Created Chunks folder", "log.log");
-                logging = true;
-            }
             if (CheckBoxReencode.IsChecked == true)
             {
                 reencode = true;
@@ -780,12 +783,26 @@ namespace NotEnoughEncodes
                     process.WaitForExit();
                 }
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttime).ToString(), DispatcherPriority.Background);
+
+                if (shutdownafterencode == true)
+                {
+                    if (Cancel.CancelAll == false)
+                    {
+                        Process.Start("shutdown.exe", "/s /t 0");
+
+                    }                                      
+                }
             }
         }
 
         //Kill all aomenc instances
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            //We don't want accidental shutdowns when clickling on cancel ¯\_(ツ)_/¯
+            if (shutdownafterencode == true)
+            {
+                shutdownafterencode = false;
+            }
             Cancel.CancelAll = true;
             KillInstances();
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Cancled!", DispatcherPriority.Background);
@@ -1032,6 +1049,21 @@ namespace NotEnoughEncodes
             TextBoxFramerate.Text = fpsOutput;
             //Console.WriteLine(fpsOutput);
             process.WaitForExit();
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            //Shows the Settings Window
+            Settings settings = new Settings();
+            settings.Show();
+        }
+
+        public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch)
+        {
+            //Gets the Settings from the Settings Window and sets them in MainWindow
+            logging = Settingslogging;
+            shutdownafterencode = shutdown;
+            batchEncoding = batch;
         }
     }
 }

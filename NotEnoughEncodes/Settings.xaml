@@ -1,0 +1,18 @@
+﻿<Window x:Class="NotEnoughEncodes.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NotEnoughEncodes"
+        mc:Ignorable="d"
+        Title="Settings" Height="279.281" Width="424.585" ResizeMode="NoResize">
+    <Window.Background>
+        <ImageBrush ImageSource="bgneu1.jpg"/>
+    </Window.Background>
+    <Grid>
+        <CheckBox x:Name="CheckBoxLogging" Content="Logging" HorizontalAlignment="Left" Margin="37,20,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194"/>
+        <Button Content="Save Settings" HorizontalAlignment="Left" Margin="261,172,0,0" VerticalAlignment="Top" Width="122" Height="46" Click="Button_Click" Background="#99232323" Foreground="White"/>
+        <CheckBox x:Name="CheckBoxShutdown" Content="Shutdown after Encode finished" HorizontalAlignment="Left" Margin="37,43,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194"/>
+
+    </Grid>
+</Window>

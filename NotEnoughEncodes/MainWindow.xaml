@@ -353,8 +353,8 @@
         <Label Content="Encode Mode" HorizontalAlignment="Left" Margin="134,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <CheckBox x:Name="CheckBoxReencode" Content="CheckBox" Grid.Column="3" HorizontalAlignment="Left" Margin="95,85,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White"/>
         <Label Content="Reencode Lossless" HorizontalAlignment="Left" Margin="1,79,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.ColumnSpan="2" Grid.Column="2"/>
-        <CheckBox x:Name="CheckBoxResume" Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="72,312,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White" Grid.ColumnSpan="2"/>
-        <Label Content="Resume" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Grid.Column="1" Height="25"/>
+        <CheckBox x:Name="CheckBoxResume" Content="CheckBox" HorizontalAlignment="Left" Margin="431,312,0,0" VerticalAlignment="Top" Height="17" Width="19" Background="#7FFFFFFF" BorderBrush="White" Foreground="White" Grid.ColumnSpan="2"/>
+        <Label Content="Resume" HorizontalAlignment="Left" Margin="374,307,0,0" VerticalAlignment="Top" Foreground="White" Background="#7F232323" Height="25"/>
         <ComboBox x:Name="ComboBoxPasses" HorizontalAlignment="Left" Margin="95,121,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}" Grid.Column="3">
             <ComboBox.RenderTransform>
                 <TransformGroup>
@@ -457,7 +457,7 @@
         </ComboBox>
         <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="292,306,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" VerticalContentAlignment="Center"/>
         <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
-        <CheckBox x:Name="CheckBoxLogging" Content="Logging" HorizontalAlignment="Left" Margin="375,312,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White"/>
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="15,309,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5" Background="#99232323" Foreground="White" BorderBrush="White" Grid.ColumnSpan="2" Grid.Column="1"/>
 
 
     </Grid>
