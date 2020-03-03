@@ -329,7 +329,7 @@
         <TextBox x:Name="TextBoxFramerate" HorizontalAlignment="Left" Height="26" Margin="10,189,0,0" TextWrapping="Wrap" Text="24000/1001" VerticalAlignment="Top" Width="109" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.Column="2" Grid.ColumnSpan="2" VerticalContentAlignment="Center"/>
         <ProgressBar x:Name="prgbar" HorizontalAlignment="Left" Height="40" Margin="14,339,0,0" VerticalAlignment="Top" Width="525" Grid.ColumnSpan="3" Background="#7F000000" Foreground="#4CF3F3F3"/>
         <Button Content=" Clear&#xA;Chunks" HorizontalAlignment="Left" Margin="72,339,0,0" VerticalAlignment="Top" Width="62" Height="40" Grid.Column="3" Click="Button_Click_3" Background="#99232323" Foreground="Red" BorderBrush="Red"/>
-        <Label x:Name="pLabel" Content="" HorizontalAlignment="Left" Margin="261,346,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label x:Name="pLabel" Content="" HorizontalAlignment="Left" Margin="32,346,0,0" VerticalAlignment="Top" Foreground="White" HorizontalContentAlignment="Center" Grid.ColumnSpan="2" Width="487"/>
         <ComboBox x:Name="ComboBoxEncMode" HorizontalAlignment="Left" Margin="224,122,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}">
             <ComboBox.RenderTransform>
                 <TransformGroup>

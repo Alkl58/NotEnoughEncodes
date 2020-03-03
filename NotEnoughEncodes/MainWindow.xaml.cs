@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,9 +14,17 @@ namespace NotEnoughEncodes
 {
     public partial class MainWindow : Window
     {
+        DispatcherTimer dt = new DispatcherTimer();
+        Stopwatch sw = new Stopwatch();
+        string currentTime = string.Empty;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            //Timer
+            dt.Tick += new EventHandler(Dt_Tick);
+            dt.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             //Get Number of Cores
             int coreCount = 0;
@@ -36,6 +45,17 @@ namespace NotEnoughEncodes
             if (fileExist)
             {
                 MessageBox.Show("May have detected unfished / uncleared Encode. If you want to resume an unfinished Job, check the Checkbox " + '\u0022' + "Resume" + '\u0022');
+            }
+        }
+
+        void Dt_Tick(object sender, EventArgs e)
+        {
+            //Timer for Elapsed Time
+            if (sw.IsRunning)
+            {
+                TimeSpan ts = sw.Elapsed;
+                currentTime = String.Format("{0:00}:{1:00}",
+                ts.Minutes, ts.Seconds / 10);
             }
         }
 
@@ -210,6 +230,7 @@ namespace NotEnoughEncodes
                 {
                     //Start MainClass
                     MainClass();
+                    
                 }
                 else
                 {
@@ -299,7 +320,8 @@ namespace NotEnoughEncodes
             {
                 customSettingsbool = true;
             }
-
+            sw.Start();
+            dt.Start();
             Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput);
         }
 
@@ -774,8 +796,11 @@ namespace NotEnoughEncodes
                     process.Start();
                     process.WaitForExit();
                 }
-
-                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed!", DispatcherPriority.Background);
+                if (sw.IsRunning)
+                {
+                    sw.Stop();
+                }
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: "+ currentTime, DispatcherPriority.Background);
             }
         }
 
@@ -1029,5 +1054,7 @@ namespace NotEnoughEncodes
             //Console.WriteLine(fpsOutput);
             process.WaitForExit();
         }
+
+       
     }
 }
