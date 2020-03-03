@@ -16,6 +16,7 @@ namespace NotEnoughEncodes
         public static bool logging;
         public static bool shutdownafterencode;
         public static bool batchEncoding;
+        public static bool enableCustomSettings = false;
 
         public MainWindow()
         {
@@ -66,6 +67,14 @@ namespace NotEnoughEncodes
                     TextBoxFramerate.Text = lines[9];
                     ComboBoxEncMode.Text = lines[10];
                     TextBoxChunkLength.Text = lines[11];
+                    ComboBoxAudioCodec.Text = lines[12];
+                    TextBoxAudioBitrate.Text = lines[13];
+                    if (lines[14] == "True") 
+                    { 
+                        enableCustomSettings = true;
+                        CheckBoxCustomSettings.IsChecked = true;
+                    }
+                    
                 }
                 //Reads custom settings to settings_custom.ini
                 bool customFileExist = File.Exists("settings_custom.ini");
@@ -81,6 +90,9 @@ namespace NotEnoughEncodes
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             //Saves all Current Settings to a file
+            string customSettingsBool = enableCustomSettings.ToString();
+            string audioSettingsBitrate = TextBoxAudioBitrate.Text;
+            string audioSettingsCodec = ComboBoxAudioCodec.Text;
             string customSettings = TextBoxCustomSettings.Text;
             string maxConcurrency = TextBoxNumberWorkers.Text;
             string kfmaxdist = TextBoxKeyframeInterval.Text;
@@ -102,7 +114,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool };
             File.WriteAllLines("settings.ini", lines);
         }
 
@@ -133,11 +145,8 @@ namespace NotEnoughEncodes
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(Cancel.CancelAll);
-
             bool folderExist = Directory.Exists("Chunks");
 
-            //Gets the Stream Framerate IF ffrpobe exist
             if (folderExist && Cancel.CancelAll == false && CheckBoxResume.IsChecked == false)
             {
                 if (MessageBox.Show("It appears that you finished a previous encode but forgot to delete the temp files. To let the program delete the files, press Yes. Press No if pressing on Encode was a mistake.",
@@ -227,11 +236,6 @@ namespace NotEnoughEncodes
         {
             //Public Cancel boolean
             public static bool CancelAll = false;
-        }
-
-        public static class Delete
-        {
-            public static bool Deleted = false;
         }
 
         public void MainClass()
@@ -610,6 +614,7 @@ namespace NotEnoughEncodes
             //Get Number of chunks for label of progressbar
             string labelstring = chunks.Count().ToString();
 
+            //Starts the Timer for eta calculation
             DateTime starttime = DateTime.Now;
 
             //Parallel Encoding - aka some blackmagic
@@ -723,7 +728,6 @@ namespace NotEnoughEncodes
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
-
                 startInfo.Arguments = "/C (for %i in (Chunks\\*.ivf) do @echo file '%i') > Chunks\\mylist.txt";
                 //Console.WriteLine(startInfo.Arguments);
                 process.StartInfo = startInfo;
@@ -736,7 +740,6 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
-
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy " + '\u0022' + outputfilename + '\u0022';
                     //Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
@@ -749,7 +752,6 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
-
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy no_audio.mkv";
                     //Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
@@ -778,7 +780,7 @@ namespace NotEnoughEncodes
                         startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -i AudioEncoded\\audio2.mkv -i AudioEncoded\\audio3.mkv -map 0:v -map 1:a -map 2:a -map 3:a -map 4:a -c copy " + '\u0022' + outputfilename + '\u0022';
                     }
                     //startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audioOutput.mkv -map 0:0 -map 0:1 -map 0:2 -c copy " + '\u0022' + outputfilename + '\u0022';
-                    Console.WriteLine(startInfo.Arguments);
+                    //Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
@@ -789,8 +791,8 @@ namespace NotEnoughEncodes
                 {
                     if (Cancel.CancelAll == false)
                     {
+                        //Shutdowns the PC if specified in settings
                         Process.Start("shutdown.exe", "/s /t 0");
-
                     }                                      
                 }
             }
@@ -805,7 +807,6 @@ namespace NotEnoughEncodes
                 shutdownafterencode = false;
             }
             Cancel.CancelAll = true;
-            Console.WriteLine("Cancel Button: "+Cancel.CancelAll);
             KillInstances();
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Cancled!", DispatcherPriority.Background);
         }
@@ -833,7 +834,6 @@ namespace NotEnoughEncodes
 
         private void DeleteTempFiles()
         {
-            Delete.Deleted = true;
             try
             {
                 //Delete Files, because of lazy dump****
@@ -1060,12 +1060,13 @@ namespace NotEnoughEncodes
             settings.Show();
         }
 
-        public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch)
+        public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch, bool loadsettings)
         {
             //Gets the Settings from the Settings Window and sets them in MainWindow
             logging = Settingslogging;
             shutdownafterencode = shutdown;
             batchEncoding = batch;
+            enableCustomSettings = loadsettings;
         }
     }
 }
