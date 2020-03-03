@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace NotEnoughEncodes
@@ -44,6 +45,7 @@ namespace NotEnoughEncodes
             }
         }
 
+
         public void readSettings()
         {
             try
@@ -74,6 +76,10 @@ namespace NotEnoughEncodes
                         enableCustomSettings = true;
                         CheckBoxCustomSettings.IsChecked = true;
                     }
+                    if (lines[15] == "True")
+                    {
+                        CheckBoxEnableAudio.IsChecked = true;
+                    }
                     
                 }
                 //Reads custom settings to settings_custom.ini
@@ -90,6 +96,7 @@ namespace NotEnoughEncodes
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             //Saves all Current Settings to a file
+            string audioCheckBox = CheckBoxEnableAudio.IsChecked.ToString();
             string customSettingsBool = enableCustomSettings.ToString();
             string audioSettingsBitrate = TextBoxAudioBitrate.Text;
             string audioSettingsCodec = ComboBoxAudioCodec.Text;
@@ -114,7 +121,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox };
             File.WriteAllLines("settings.ini", lines);
         }
 
@@ -639,7 +646,7 @@ namespace NotEnoughEncodes
                                     startInfo.FileName = "cmd.exe";
                                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1" + allSettingsAom + " --output=Chunks\\" + items + "-av1.ivf";
                                     process.StartInfo = startInfo;
-                                    Console.WriteLine(startInfo.Arguments);
+                                    //Console.WriteLine(startInfo.Arguments);
                                     process.Start();
                                     process.WaitForExit();
 
@@ -1068,5 +1075,32 @@ namespace NotEnoughEncodes
             batchEncoding = batch;
             enableCustomSettings = loadsettings;
         }
+        private void ComboBoxEncMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //Sets the Quality label accordingly the selected encode mode
+            string text = (e.AddedItems[0] as ComboBoxItem).Content as string;
+            if (text == "vbr" || text == "cbr")
+            {
+                
+                LabelQ.Visibility = Visibility.Collapsed;
+                LabelVbr.Visibility = Visibility.Visible;
+             
+            }
+            if (text == "q")
+            {
+                if (LabelVbr == null)
+                {
+                    //Null point exception if not "(LabelVbr == null)"
+                }
+                else
+                {
+                    LabelVbr.Visibility = Visibility.Collapsed;
+                    LabelQ.Visibility = Visibility.Visible;
+                }
+
+            }
+
+        }
+
     }
 }

@@ -310,7 +310,6 @@
         <Border BorderBrush="#00000000" BorderThickness="1" Grid.ColumnSpan="4" Height="4" Margin="9,113,22,0" VerticalAlignment="Top" Background="#7F000000"/>
         <Label Content="Number of workers" HorizontalAlignment="Left" Margin="292,79,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" Grid.ColumnSpan="2"/>
         <TextBox x:Name="TextBoxNumberWorkers" HorizontalAlignment="Left" Height="26" Margin="418,79,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2" VerticalContentAlignment="Center"/>
-        <Label Content="Quality" HorizontalAlignment="Left" Margin="169,152,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <TextBox x:Name="TextBoxcqLevel" HorizontalAlignment="Left" Height="26" Margin="224,152,0,0" TextWrapping="Wrap" Text="30" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label Content="Threads" HorizontalAlignment="Left" Margin="325,121,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <TextBox x:Name="TextBoxEncThreads" HorizontalAlignment="Left" Height="26" Margin="382,121,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="38" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" Grid.ColumnSpan="2" VerticalContentAlignment="Center"/>
@@ -330,7 +329,7 @@
         <ProgressBar x:Name="prgbar" HorizontalAlignment="Left" Height="40" Margin="14,339,0,0" VerticalAlignment="Top" Width="525" Grid.ColumnSpan="3" Background="#7F000000" Foreground="#4CF3F3F3"/>
         <Button Content=" Clear&#xA;Chunks" HorizontalAlignment="Left" Margin="72,339,0,0" VerticalAlignment="Top" Width="62" Height="40" Grid.Column="3" Click="Button_Click_3" Background="#99232323" Foreground="Red" BorderBrush="Red"/>
         <Label x:Name="pLabel" Content="" HorizontalAlignment="Left" Margin="32,346,0,0" VerticalAlignment="Top" Foreground="White" HorizontalContentAlignment="Center" Grid.ColumnSpan="2" Width="487"/>
-        <ComboBox x:Name="ComboBoxEncMode" HorizontalAlignment="Left" Margin="224,122,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}">
+        <ComboBox x:Name="ComboBoxEncMode" HorizontalAlignment="Left" Margin="224,122,0,0" VerticalAlignment="Top" Width="46" BorderBrush="#FF4F4F4F" RenderTransformOrigin="0.5,0.5" Background="Black" Foreground="White" OverridesDefaultStyle="True" Style="{DynamicResource ComboBoxStyle1}" SelectionChanged="ComboBoxEncMode_SelectionChanged">
             <ComboBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -456,9 +455,10 @@
             <ComboBoxItem Content="MP3 VBR"/>
         </ComboBox>
         <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="292,306,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="70" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" VerticalContentAlignment="Center"/>
-        <Label Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <Label x:Name="LabelAudioBitrate" Content="Bitrate:" HorizontalAlignment="Left" Margin="240,306,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
         <Button Content="Settings" HorizontalAlignment="Left" Margin="15,309,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5" Background="#99232323" Foreground="White" BorderBrush="White" Grid.ColumnSpan="2" Grid.Column="1"/>
-
+        <Label x:Name="LabelQ" Content="Quality" HorizontalAlignment="Left" Margin="134,152,0,0" VerticalAlignment="Top" Width="83" Background="#99232323" Foreground="White" HorizontalContentAlignment="Center"/>
+        <Label x:Name="LabelVbr" Content="Bitrate (kbps)" HorizontalAlignment="Left" Margin="134,152,0,0" VerticalAlignment="Top" Width="83" Background="#99232323" Foreground="White" HorizontalContentAlignment="Center" Visibility="Collapsed"/>
 
     </Grid>
 </Window>
