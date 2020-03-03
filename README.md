@@ -17,8 +17,12 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 
 ### Installation:
 
-1. Download [ffmpeg and ffprobe](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases).
+1. Download [ffmpeg and ffprobe](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases). (For Windows 7: [NotEnoughEncodes](https://ci.appveyor.com/project/Alkl/notenoughencodes/builds/31209233/artifacts))
 2. Create a new Folder and put all .exe files in them (ffmpeg, ffprobe, aomenc and NotEnoughEncodes.exe)
+
+### System Requirements:
+- [Microsoft .NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472)
+- [Microsoft Visual C++ Redistributable x64](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Usage:
 1. Open NotEnoughEncodes.exe
