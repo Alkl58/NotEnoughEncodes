@@ -115,7 +115,7 @@ namespace NotEnoughEncodes
             //Gets the Stream Framerate IF ffrpobe exist
             if (fileExist)
             {
-                getStreamFps(TextBoxInputVideo.Text);
+                GetStreamFps(TextBoxInputVideo.Text);
             }
         }
 
@@ -170,7 +170,6 @@ namespace NotEnoughEncodes
                     //This will be set if you Press Encode after a already finished encode
                     prgbar.Maximum = 100;
                     prgbar.Value = 0;
-
                 }
                 else
                 {
@@ -310,13 +309,13 @@ namespace NotEnoughEncodes
             //Audio Encoding
             if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
-                await Task.Run(() => encodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath));
+                await Task.Run(() => EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath));
             }
             if (CheckBoxResume.IsChecked == false)
             {
-                await Task.Run(() => rename(currentPath));
+                await Task.Run(() => Rename(currentPath));
             }
-            await Task.Run(() => encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput));
+            await Task.Run(() => Encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput));
         }
 
         private void Splitting(string videoInput, bool resume, bool logging, bool reencode, string chunkLength)
@@ -359,7 +358,7 @@ namespace NotEnoughEncodes
             }
         }
 
-        private void rename(string currentPath)
+        private void Rename(string currentPath)
         {
             //Create Array List with all Chunks
             string[] chunks;
@@ -488,7 +487,7 @@ namespace NotEnoughEncodes
             }
         }
 
-        private void encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
+        private void Encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
         {
             //Create Array List with all Chunks
             string[] chunks;
@@ -579,11 +578,11 @@ namespace NotEnoughEncodes
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Async Task started", "log.log");
             }
             //Run encode class async
-            await Task.Run(() => encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput));
+            await Task.Run(() => Encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput));
         }
 
         //Main Encoding Class
-        public void encode(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput)
+        public void Encode(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -695,11 +694,11 @@ namespace NotEnoughEncodes
             }
 
             //Mux all Encoded chunks back together
-            concat(videoOutput, audioOutput);
+            Concat(videoOutput, audioOutput);
         }
 
         //Mux ivf Files back together
-        private void concat(string videoOutput, bool audioOutput)
+        private void Concat(string videoOutput, bool audioOutput)
         {
             if (Cancel.CancelAll == false)
             {
@@ -752,8 +751,25 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
-                    startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i Audio\\audio.mkv -c copy " + '\u0022' + outputfilename + '\u0022';
-                    //Console.WriteLine(startInfo.Arguments);
+                    //Sets the mapping of the video and audiostreams and muxes them
+                    if (numberOfAudioTracks == 1)
+                    {
+                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv  -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                    }
+                    else if (numberOfAudioTracks == 2)
+                    {
+                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                    }
+                    else if (numberOfAudioTracks == 3)
+                    {
+                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -i AudioEncoded\\audio2.mkv -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                    }
+                    else if (numberOfAudioTracks == 4)
+                    {
+                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -i AudioEncoded\\audio2.mkv -i AudioEncoded\\audio3.mkv -map 0:v -map 1:a -map 2:a -map 3:a -map 4:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                    }
+                    //startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audioOutput.mkv -map 0:0 -map 0:1 -map 0:2 -c copy " + '\u0022' + outputfilename + '\u0022';
+                    Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
@@ -800,7 +816,8 @@ namespace NotEnoughEncodes
                 //Delete Files, because of lazy dump****
                 File.Delete("encoded.txt");
                 Directory.Delete("Chunks", true);
-                Directory.Delete("Audio", true);
+                Directory.Delete("AudioExtracted", true);
+                Directory.Delete("AudioEncoded", true);
                 File.Delete("no_audio.mkv");
             }
             catch { }
@@ -859,7 +876,9 @@ namespace NotEnoughEncodes
             TextBoxFramerate.IsEnabled = true;
         }
 
-        public void encodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
+        public int numberOfAudioTracks;
+
+        public void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
         {
             if (logging == true)
             {
@@ -941,31 +960,53 @@ namespace NotEnoughEncodes
             }
 
             //Creates Audio Folder
-            if (!Directory.Exists(Path.Combine(currentPath, "Audio")))
-                Directory.CreateDirectory(Path.Combine(currentPath, "Audio"));
+            if (!Directory.Exists(Path.Combine(currentPath, "AudioExtracted")))
+                Directory.CreateDirectory(Path.Combine(currentPath, "AudioExtracted"));
+            if (!Directory.Exists(Path.Combine(currentPath, "AudioEncoded")))
+                Directory.CreateDirectory(Path.Combine(currentPath, "AudioEncoded"));
 
             Process process = new Process();
+            //Starts extracting maximal 4 Audio Streams
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-
-            //FFmpeg Arguments
-            if (logging == true)
-            {
-                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Started Audio Encoding", "log.log");
-            }
-            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + allAudioSettings + " -vn " + '\u0022' + "Audio\\audio.mkv" + '\u0022';
-            if (logging == true)
-            {
-                WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Ended", "log.log");
-            }
-            //Console.WriteLine(startInfo.Arguments);
+            startInfo.Arguments = "/C ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:0 AudioExtracted\\audio0.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:1 AudioExtracted\\audio1.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:2 AudioExtracted\\audio2.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:3 AudioExtracted\\audio3.mkv";
+            Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
+            DirectoryInfo AudioExtracted = new DirectoryInfo("AudioExtracted");
+            //Loops through all mkv files in AudioExtracted
+            foreach (var file in AudioExtracted.GetFiles("*.mkv"))
+            {
+                //Directory.Move(file.FullName, filepath + "\\TextFiles\\" + file.Name);
+                //Get the Filesize, because the command above also creates mkv files even if there is not audiostream (filesize = 0)
+                long length = new FileInfo("AudioExtracted\\" + file).Length;
+                //Console.WriteLine(length);
+                //If Filesize = 0 -> delete file
+                if (length == 0)
+                {
+                    File.Delete("AudioExtracted\\" + file);
+                }
+                else if (length > 1)
+                {
+                    //Encodes the Audio to the given format
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = "/C ffmpeg.exe -i AudioExtracted\\" + file + " " + allAudioSettings + "-vn AudioEncoded\\" + file;
+                    Console.WriteLine(startInfo.Arguments);
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+            //Counts the number of AudioFiles
+            int audioCount = Directory.GetFiles("AudioEncoded", "*mkv", SearchOption.TopDirectoryOnly).Length;
+            //Sets the number of AudioTracks of the concat process
+            numberOfAudioTracks = audioCount;
         }
 
-        public void getStreamFps(string fileinput)
+        public void GetStreamFps(string fileinput)
         {
             string input = "";
 
