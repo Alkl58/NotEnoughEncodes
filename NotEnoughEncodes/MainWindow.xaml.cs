@@ -133,11 +133,32 @@ namespace NotEnoughEncodes
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine(Cancel.CancelAll);
+
+            bool folderExist = Directory.Exists("Chunks");
+
+            //Gets the Stream Framerate IF ffrpobe exist
+            if (folderExist && Cancel.CancelAll == false && CheckBoxResume.IsChecked == false)
+            {
+                if (MessageBox.Show("It appears that you finished a previous encode but forgot to delete the temp files. To let the program delete the files, press Yes. Press No if pressing on Encode was a mistake.",
+                        "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    DeleteTempFiles();
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
+                    //This will be set if you Press Encode after a already finished encode
+                    prgbar.Maximum = 100;
+                    prgbar.Value = 0;
+                }
+                else
+                {
+                    Cancel.CancelAll = true;
+                }
+            }
+
             if (Cancel.CancelAll == true && CheckBoxResume.IsChecked == false)
             {
                 //Asks the user if he wants to resume the process.
-                if (MessageBox.Show("It appears that you canceled a previous encode. If you want to resume an cancelled encode, press Yes.",
-                    "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("It appears that you canceled a previous encode. If you want to resume an cancelled encode, press Yes.", "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     CheckBoxResume.IsChecked = true;
                     Cancel.CancelAll = false;
@@ -159,26 +180,6 @@ namespace NotEnoughEncodes
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Resuming...", DispatcherPriority.Background);
                 prgbar.Maximum = 100;
                 prgbar.Value = 0;
-            }
-
-            bool folderExist = Directory.Exists("Chunks");
-
-            //Gets the Stream Framerate IF ffrpobe exist
-            if (folderExist)
-            {
-                if (MessageBox.Show("It appears that you finished a previous encode but forgot to delete the temp files. To let the program delete the files, press Yes. Press No if pressing on Encode was a mistake.",
-                        "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    DeleteTempFiles();
-                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
-                    //This will be set if you Press Encode after a already finished encode
-                    prgbar.Maximum = 100;
-                    prgbar.Value = 0;
-                }
-                else
-                {
-                    Cancel.CancelAll = true;
-                }
             }
 
             if (logging == true)
@@ -804,6 +805,7 @@ namespace NotEnoughEncodes
                 shutdownafterencode = false;
             }
             Cancel.CancelAll = true;
+            Console.WriteLine("Cancel Button: "+Cancel.CancelAll);
             KillInstances();
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Cancled!", DispatcherPriority.Background);
         }
