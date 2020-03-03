@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,17 +13,9 @@ namespace NotEnoughEncodes
 {
     public partial class MainWindow : Window
     {
-        DispatcherTimer dt = new DispatcherTimer();
-        Stopwatch sw = new Stopwatch();
-        string currentTime = string.Empty;
-
         public MainWindow()
         {
             InitializeComponent();
-
-            //Timer
-            dt.Tick += new EventHandler(Dt_Tick);
-            dt.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             //Get Number of Cores
             int coreCount = 0;
@@ -45,17 +36,6 @@ namespace NotEnoughEncodes
             if (fileExist)
             {
                 MessageBox.Show("May have detected unfished / uncleared Encode. If you want to resume an unfinished Job, check the Checkbox " + '\u0022' + "Resume" + '\u0022');
-            }
-        }
-
-        void Dt_Tick(object sender, EventArgs e)
-        {
-            //Timer for Elapsed Time
-            if (sw.IsRunning)
-            {
-                TimeSpan ts = sw.Elapsed;
-                currentTime = String.Format("{0:00}:{1:00}",
-                ts.Minutes, ts.Seconds / 10);
             }
         }
 
@@ -230,7 +210,6 @@ namespace NotEnoughEncodes
                 {
                     //Start MainClass
                     MainClass();
-                    
                 }
                 else
                 {
@@ -320,8 +299,6 @@ namespace NotEnoughEncodes
             {
                 customSettingsbool = true;
             }
-            sw.Start();
-            dt.Start();
             Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput);
         }
 
@@ -629,6 +606,8 @@ namespace NotEnoughEncodes
             //Get Number of chunks for label of progressbar
             string labelstring = chunks.Count().ToString();
 
+            DateTime starttime = DateTime.Now;
+
             //Parallel Encoding - aka some blackmagic
             using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
             {
@@ -658,7 +637,9 @@ namespace NotEnoughEncodes
                                     //Progressbar +1
                                     prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                     //Label of Progressbar = Progressbar
-                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
+                                    TimeSpan timespent = DateTime.Now - starttime;
+                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
+
                                     if (Cancel.CancelAll == false)
                                     {
                                         //Write Item to file for later resume if something bad happens
@@ -690,7 +671,9 @@ namespace NotEnoughEncodes
                                     process.WaitForExit();
 
                                     prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
-                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
+                                    TimeSpan timespent = DateTime.Now - starttime;
+                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
+                                    //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                     if (Cancel.CancelAll == false)
                                     {
                                         //Write Item to file for later resume if something bad happens
@@ -716,11 +699,11 @@ namespace NotEnoughEncodes
             }
 
             //Mux all Encoded chunks back together
-            Concat(videoOutput, audioOutput);
+            Concat(videoOutput, audioOutput, starttime);
         }
 
         //Mux ivf Files back together
-        private void Concat(string videoOutput, bool audioOutput)
+        private void Concat(string videoOutput, bool audioOutput, DateTime starttime)
         {
             if (Cancel.CancelAll == false)
             {
@@ -796,11 +779,7 @@ namespace NotEnoughEncodes
                     process.Start();
                     process.WaitForExit();
                 }
-                if (sw.IsRunning)
-                {
-                    sw.Stop();
-                }
-                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: "+ currentTime, DispatcherPriority.Background);
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttime).ToString(), DispatcherPriority.Background);
             }
         }
 
@@ -1054,7 +1033,5 @@ namespace NotEnoughEncodes
             //Console.WriteLine(fpsOutput);
             process.WaitForExit();
         }
-
-       
     }
 }
