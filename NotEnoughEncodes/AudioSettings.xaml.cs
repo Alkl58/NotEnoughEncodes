@@ -20,10 +20,12 @@ namespace NotEnoughEncodes
                 TextBoxAudioBitrate.Text = MainWindow.audioBitrate;
             }
         }
-
+        string text;
         private void ComboBoxAudioCodec_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string text = (e.AddedItems[0] as ComboBoxItem).Content as string;
+ 
+            text = (e.AddedItems[0] as ComboBoxItem).Content as string;
+
             if (text == "MP3 VBR")
             {
                 LabelBitrate.Content = "Quality (0-9)";

@@ -313,6 +313,7 @@
             </ComboBox.ItemContainerStyle>
             <ComboBoxItem IsSelected="True" Foreground="White" Content="Opus" Background="#FF383838" />
             <ComboBoxItem Content="Opus 5.1" />
+            <ComboBoxItem Content="Opus Downmix"/>
             <ComboBoxItem Content="AAC CBR" Foreground="White" />
             <ComboBoxItem Content="Copy Audio" Foreground="White" />
             <ComboBoxItem Content="AC3" />

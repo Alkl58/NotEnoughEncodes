@@ -87,6 +87,14 @@ namespace NotEnoughEncodes
                     allAudioSettings = " -c:a libmp3lame -q:a " + audioBitrate + " ";
                 }
             }
+            else if (audioCodec == "Opus Downmix")
+            {
+                if (logging == true)
+                {
+                    SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to Opus Downmix", "log.log");
+                }
+                allAudioSettings = " -c:a libopus -b:a " + audioBitrate + "k -ac 2";
+            }
 
             //Creates Audio Folder
             if (!Directory.Exists(Path.Combine(currentPath, "AudioExtracted")))

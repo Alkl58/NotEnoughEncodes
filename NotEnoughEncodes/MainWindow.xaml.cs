@@ -110,6 +110,15 @@ namespace NotEnoughEncodes
             string cqLevel = TextBoxcqLevel.Text;
             string fps = TextBoxFramerate.Text;
 
+            if (audioSettingsCodec == "" || audioSettingsCodec == null)
+            {
+                audioSettingsCodec = "Opus";
+            }
+            if (audioSettingsBitrate == "" || audioSettingsBitrate == null)
+            {
+                audioSettingsBitrate = "128";
+            }
+
             //Saves custom settings in settings_custom.ini
             if (CheckBoxCustomSettings.IsChecked == true)
             {
