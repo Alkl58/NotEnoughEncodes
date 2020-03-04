@@ -264,7 +264,7 @@ namespace NotEnoughEncodes
                     }
                     else if (batchEncoding == true)
                     {
-                        batchEncode();
+                        BatchEncode();
                     }
                 }
                 else
@@ -279,7 +279,7 @@ namespace NotEnoughEncodes
         public bool batchFilefinished;
         public DateTime starttimea;
 
-        public async void batchEncode()
+        public async void BatchEncode()
         {
             batchFilefinished = true;
             DirectoryInfo batchfiles = new DirectoryInfo(TextBoxInputVideo.Text);
@@ -421,6 +421,13 @@ namespace NotEnoughEncodes
                 if (Cancel.CancelAll == false)
                 {
                     File.Delete("unifnished_job.ini");
+                }
+            }
+            if (shutdownafterencode == true)
+            {
+                if (Cancel.CancelAll == false)
+                {
+                    Process.Start("shutdown.exe", "/s /t 0");
                 }
             }
         }
