@@ -834,32 +834,12 @@ namespace NotEnoughEncodes
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            //Disables editing of preset settings if user wants to write custom settings
-            TextBoxCustomSettings.IsEnabled = true;
-            ComboBoxEncMode.IsEnabled = false;
-            TextBoxcqLevel.IsEnabled = false;
-            TextBoxEncThreads.IsEnabled = false;
-            ComboBoxBitdepth.IsEnabled = false;
-            ComboBoxCpuUsed.IsEnabled = false;
-            TextBoxTileCols.IsEnabled = false;
-            TextBoxTileRows.IsEnabled = false;
-            TextBoxKeyframeInterval.IsEnabled = false;
-            TextBoxFramerate.IsEnabled = false;
+
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            //Re-enables editing of preset settings
-            TextBoxCustomSettings.IsEnabled = false;
-            ComboBoxEncMode.IsEnabled = true;
-            TextBoxcqLevel.IsEnabled = true;
-            TextBoxEncThreads.IsEnabled = true;
-            ComboBoxBitdepth.IsEnabled = true;
-            ComboBoxCpuUsed.IsEnabled = true;
-            TextBoxTileCols.IsEnabled = true;
-            TextBoxTileRows.IsEnabled = true;
-            TextBoxKeyframeInterval.IsEnabled = true;
-            TextBoxFramerate.IsEnabled = true;
+
         }
 
         public static int numberOfAudioTracks;
