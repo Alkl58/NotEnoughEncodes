@@ -61,12 +61,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AudioEncode.cs" />
     <Compile Include="AudioSettings.xaml.cs">
       <DependentUpon>AudioSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Concatenate.cs" />
+    <Compile Include="Rename.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SmallScripts.cs" />
     <Page Include="AudioSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
