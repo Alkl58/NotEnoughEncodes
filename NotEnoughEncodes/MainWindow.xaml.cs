@@ -137,8 +137,11 @@ namespace NotEnoughEncodes
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
                     TextBoxInputVideo.Text = openFileDialog.FileName;
-                GetStreamFps(TextBoxInputVideo.Text);
-                SmallScripts.GetStreamLength(TextBoxInputVideo.Text);
+                if (TextBoxInputVideo.Text != "" && TextBoxInputVideo.Text != null && TextBoxInputVideo.Text != " Input Video")
+                {
+                    GetStreamFps(TextBoxInputVideo.Text);
+                    SmallScripts.GetStreamLength(TextBoxInputVideo.Text);
+                }
             }
             else if (batchEncoding == true)
             {
