@@ -7,13 +7,12 @@
         mc:Ignorable="d"
         Title="Settings" Height="279.281" Width="424.585" ResizeMode="NoResize">
     <Window.Background>
-        <ImageBrush ImageSource="bgneu1.jpg"/>
+        <ImageBrush ImageSource="bgneu1.jpg" />
     </Window.Background>
     <Grid>
-        <CheckBox x:Name="CheckBoxLogging" Content="Logging" HorizontalAlignment="Left" Margin="37,20,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194"/>
-        <Button Content="Save" HorizontalAlignment="Left" Margin="261,172,0,0" VerticalAlignment="Top" Width="122" Height="46" Click="Button_Click" Background="#99232323" Foreground="White"/>
-        <CheckBox x:Name="CheckBoxShutdown" Content="Shutdown after Encode finished" HorizontalAlignment="Left" Margin="37,43,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194"/>
-        <CheckBox x:Name="CheckBoxCustomSettings" Content="Enable custom settings by default" HorizontalAlignment="Left" Margin="37,66,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194"/>
-
+        <CheckBox x:Name="CheckBoxLogging" Content="Logging" HorizontalAlignment="Left" Margin="37,20,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
+        <Button Content="Save" HorizontalAlignment="Left" Margin="261,172,0,0" VerticalAlignment="Top" Width="122" Height="46" Click="Button_Click" Background="#99232323" Foreground="White" />
+        <CheckBox x:Name="CheckBoxShutdown" Content="Shutdown after Encode finished" HorizontalAlignment="Left" Margin="37,43,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
+        <CheckBox x:Name="CheckBoxCustomSettings" Content="Enable custom settings by default" HorizontalAlignment="Left" Margin="37,66,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
     </Grid>
 </Window>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using System.Data;
 
 namespace NotEnoughEncodes
 {
@@ -18,6 +19,8 @@ namespace NotEnoughEncodes
         public static bool shutdownafterencode;
         public static bool batchEncoding;
         public static bool enableCustomSettings = false;
+        public static string audioCodec;
+        public static string audioBitrate;
 
         public MainWindow()
         {
@@ -32,9 +35,10 @@ namespace NotEnoughEncodes
             //Sets the Number of Workers = Phsyical Core Count
             int tempCorecount = coreCount * 1 / 2;
             TextBoxNumberWorkers.Text = tempCorecount.ToString();
-
+            //Checks for aomenc, ffmpeg and ffprobe
+            CheckDependencies();
             //Load Settings
-            readSettings();
+            ReadSettings();
 
             //If settings.ini exist -> Set all Values
             bool fileExist = File.Exists("encoded.txt");
@@ -45,8 +49,18 @@ namespace NotEnoughEncodes
             }
         }
 
+        private void CheckDependencies()
+        {
+            bool aomencExist = File.Exists("aomenc.exe");
+            bool ffmpegExist = File.Exists("ffmpeg.exe");
+            bool ffprobeExist = File.Exists("ffprobe.exe");
+            if (aomencExist == false || ffmpegExist == false || ffprobeExist == false)
+            {
+                MessageBox.Show("Couldn't find all depedencies: \n aomenc found: " + aomencExist + "\n ffmpeg found: " + ffmpegExist + " \n ffprobe found: " + ffprobeExist);
+            }
+        }
 
-        public void readSettings()
+        public void ReadSettings()
         {
             try
             {
@@ -69,10 +83,10 @@ namespace NotEnoughEncodes
                     TextBoxFramerate.Text = lines[9];
                     ComboBoxEncMode.Text = lines[10];
                     TextBoxChunkLength.Text = lines[11];
-                    ComboBoxAudioCodec.Text = lines[12];
-                    TextBoxAudioBitrate.Text = lines[13];
-                    if (lines[14] == "True") 
-                    { 
+                    audioCodec = lines[12];
+                    audioBitrate = lines[13];
+                    if (lines[14] == "True")
+                    {
                         enableCustomSettings = true;
                         CheckBoxCustomSettings.IsChecked = true;
                     }
@@ -80,7 +94,6 @@ namespace NotEnoughEncodes
                     {
                         CheckBoxEnableAudio.IsChecked = true;
                     }
-                    
                 }
                 //Reads custom settings to settings_custom.ini
                 bool customFileExist = File.Exists("settings_custom.ini");
@@ -98,16 +111,16 @@ namespace NotEnoughEncodes
             //Saves all Current Settings to a file
             string audioCheckBox = CheckBoxEnableAudio.IsChecked.ToString();
             string customSettingsBool = enableCustomSettings.ToString();
-            string audioSettingsBitrate = TextBoxAudioBitrate.Text;
-            string audioSettingsCodec = ComboBoxAudioCodec.Text;
             string customSettings = TextBoxCustomSettings.Text;
             string maxConcurrency = TextBoxNumberWorkers.Text;
             string kfmaxdist = TextBoxKeyframeInterval.Text;
             string chunkLength = TextBoxChunkLength.Text;
+            string audioSettingsBitrate = audioBitrate;
             string encThreads = TextBoxEncThreads.Text;
             string bitDepth = ComboBoxBitdepth.Text;
             string tilecols = TextBoxTileCols.Text;
             string tilerows = TextBoxTileRows.Text;
+            string audioSettingsCodec = audioCodec;
             string encMode = ComboBoxEncMode.Text;
             string cpuUsed = ComboBoxCpuUsed.Text;
             string nrPasses = ComboBoxPasses.Text;
@@ -131,15 +144,41 @@ namespace NotEnoughEncodes
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
                 TextBoxInputVideo.Text = openFileDialog.FileName;
+            //Set the Stream Framerate from the video
+            GetStreamFps(TextBoxInputVideo.Text);
+            GetStreamLength(TextBoxInputVideo.Text);
+            
+        }
+        public string streamLength;
+        public string streamFps;
+        private void GetStreamLength(string fileinput)
+        {
+            string input;
 
-            //If ffprobe exist -> Set all Values
-            bool fileExist = File.Exists("ffprobe.exe");
+            input = '\u0022' + fileinput + '\u0022';
 
-            //Gets the Stream Framerate IF ffrpobe exist
-            if (fileExist)
+            Process process = new Process();
+            process.StartInfo = new ProcessStartInfo()
             {
-                GetStreamFps(TextBoxInputVideo.Text);
-            }
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = "cmd.exe",
+                Arguments = "/C ffprobe.exe -i " + input + " -show_entries format=duration -v quiet -of csv=" + '\u0022'+ "p=0" + '\u0022',
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            };
+            process.Start();
+            string streamlength = process.StandardOutput.ReadLine();
+            //TextBoxFramerate.Text = fpsOutput;
+            //Console.WriteLine(streamlength);
+            string value = new DataTable().Compute(streamlength, null).ToString();
+            streamLength = Convert.ToInt64(Math.Round(Convert.ToDouble(value))).ToString();
+            //streamLength = streamlength;
+            Console.WriteLine(streamLength);
+            process.WaitForExit();
+
+
         }
 
         private void ButtonOutput_Click(object sender, RoutedEventArgs e)
@@ -262,12 +301,12 @@ namespace NotEnoughEncodes
 
             //Sets the variable for input / output of video
             string customSettings = TextBoxCustomSettings.Text;
-            string audioBitrate = TextBoxAudioBitrate.Text;
             string videoOutput = TextBoxOutputVideo.Text;
             string chunkLength = TextBoxChunkLength.Text;
-            string audioCodec = ComboBoxAudioCodec.Text;
             string videoInput = TextBoxInputVideo.Text;
+            string streamLenghtVideo = streamLength;
             string encMode = ComboBoxEncMode.Text;
+            string streamFrameRate = streamFps;
             string fps = TextBoxFramerate.Text;
 
             int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
@@ -314,10 +353,10 @@ namespace NotEnoughEncodes
             {
                 customSettingsbool = true;
             }
-            Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput);
+            Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput, streamLenghtVideo, streamFrameRate);
         }
 
-        private async void Async(string videoInput, string currentPath, string videoOutput, bool resume, bool logging, bool reencode, string chunkLength, string audioBitrate, string audioCodec, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
+        private async void Async(string videoInput, string currentPath, string videoOutput, bool resume, bool logging, bool reencode, string chunkLength, string audioBitrate, string audioCodec, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput, string streamLenghtVideo, string streamFrameRate)
         {
             await Task.Run(() => Splitting(videoInput, resume, logging, reencode, chunkLength));
             //Audio Encoding
@@ -329,7 +368,7 @@ namespace NotEnoughEncodes
             {
                 await Task.Run(() => Rename(currentPath));
             }
-            await Task.Run(() => Encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput));
+            await Task.Run(() => Encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput, streamLenghtVideo, streamFrameRate));
         }
 
         private void Splitting(string videoInput, bool resume, bool logging, bool reencode, string chunkLength)
@@ -501,7 +540,7 @@ namespace NotEnoughEncodes
             }
         }
 
-        private void Encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput)
+        private void Encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput, string streamLenghtVideo, string streamFrameRate)
         {
             //Create Array List with all Chunks
             string[] chunks;
@@ -576,7 +615,7 @@ namespace NotEnoughEncodes
             }
 
             //Starts the async task
-            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput, logging);
+            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput, logging, streamLenghtVideo, fps, streamFrameRate);
             //Set Maximum of Progressbar
             prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
             //prgbar.Maximum = chunks.Count();
@@ -585,18 +624,18 @@ namespace NotEnoughEncodes
         }
 
         //Async Class -> UI doesnt freeze
-        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput, bool logging)
+        private async void StartTask(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput, bool logging, string streamLenghtVideo, string fps, string streamFrameRate)
         {
             if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Async Task started", "log.log");
             }
             //Run encode class async
-            await Task.Run(() => Encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput));
+            await Task.Run(() => Encode(maxConcurrency, passes, allSettingsAom, resume, videoOutput, audioOutput, streamLenghtVideo, fps, streamFrameRate));
         }
 
         //Main Encoding Class
-        public void Encode(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput)
+        public void Encode(int maxConcurrency, int passes, string allSettingsAom, bool resume, string videoOutput, bool audioOutput, string streamLenghtVideo, string fps, string streamFrameRate)
         {
             //Set Working directory
             string currentPath = Directory.GetCurrentDirectory();
@@ -654,7 +693,8 @@ namespace NotEnoughEncodes
                                     prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                     //Label of Progressbar = Progressbar
                                     TimeSpan timespent = DateTime.Now - starttime;
-                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
+                                    //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
+                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - " + Math.Round(Convert.ToDecimal(((((Int16.Parse(streamLenghtVideo) * Int16.Parse(streamFrameRate)) / Int16.Parse(labelstring)) * prgbar.Value) / timespent.TotalSeconds)), 2).ToString() + "fps"+ " - " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + "min left", DispatcherPriority.Background);
 
                                     if (Cancel.CancelAll == false)
                                     {
@@ -688,7 +728,8 @@ namespace NotEnoughEncodes
 
                                     prgbar.Dispatcher.Invoke(() => prgbar.Value += 1, DispatcherPriority.Background);
                                     TimeSpan timespent = DateTime.Now - starttime;
-                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
+                                    pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - " + Math.Round(Convert.ToDecimal(((((Int16.Parse(streamLenghtVideo) * Int16.Parse(streamFrameRate)) / Int16.Parse(labelstring)) * prgbar.Value) / timespent.TotalSeconds)), 2).ToString() + "fps" + " - " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + "min left", DispatcherPriority.Background);
+                                    //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
                                     //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                     if (Cancel.CancelAll == false)
                                     {
@@ -800,7 +841,7 @@ namespace NotEnoughEncodes
                     {
                         //Shutdowns the PC if specified in settings
                         Process.Start("shutdown.exe", "/s /t 0");
-                    }                                      
+                    }
                 }
             }
         }
@@ -979,11 +1020,11 @@ namespace NotEnoughEncodes
                 {
                     WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Audio Encoding Setting Encode Mode to MP3 CBR", "log.log");
                 }
-                if (Int16.Parse(TextBoxAudioBitrate.Text) >= 10)
+                if (Int16.Parse(audioBitrate) >= 10)
                 {
                     MessageBox.Show("Audio VBR Range is from 0-9");
                 }
-                else if (Int16.Parse(TextBoxAudioBitrate.Text) <= 10)
+                else if (Int16.Parse(audioBitrate) <= 10)
                 {
                     allAudioSettings = " -c:a libmp3lame -q:a " + audioBitrate + " ";
                 }
@@ -1056,7 +1097,8 @@ namespace NotEnoughEncodes
             process.Start();
             string fpsOutput = process.StandardOutput.ReadLine();
             TextBoxFramerate.Text = fpsOutput;
-            //Console.WriteLine(fpsOutput);
+            string value = new DataTable().Compute(TextBoxFramerate.Text, null).ToString();
+            streamFps = Convert.ToInt64(Math.Round(Convert.ToDouble(value))).ToString();
             process.WaitForExit();
         }
 
@@ -1075,16 +1117,15 @@ namespace NotEnoughEncodes
             batchEncoding = batch;
             enableCustomSettings = loadsettings;
         }
+
         private void ComboBoxEncMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //Sets the Quality label accordingly the selected encode mode
             string text = (e.AddedItems[0] as ComboBoxItem).Content as string;
             if (text == "vbr" || text == "cbr")
             {
-                
                 LabelQ.Visibility = Visibility.Collapsed;
                 LabelVbr.Visibility = Visibility.Visible;
-             
             }
             if (text == "q")
             {
@@ -1097,9 +1138,19 @@ namespace NotEnoughEncodes
                     LabelVbr.Visibility = Visibility.Collapsed;
                     LabelQ.Visibility = Visibility.Visible;
                 }
-
             }
+        }
 
+        private void ButtonAudioSettings_Click(object sender, RoutedEventArgs e)
+        {
+            AudioSettings audiosettings = new AudioSettings();
+            audiosettings.Show();
+        }
+
+        public static void SaveAudioSettings(string AudioCodec, string AudioBitrate)
+        {
+            audioCodec = AudioCodec;
+            audioBitrate = AudioBitrate;
         }
 
     }
