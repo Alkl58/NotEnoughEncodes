@@ -9,7 +9,7 @@ At the end it will [Concatenate](https://trac.ffmpeg.org/wiki/Concatenate) the c
 
 This tool is Windows only. For multiplatform and more features check out the CLI Tool [Av1an](https://github.com/master-of-zen/Av1an).
 
-![alt text](https://i.imgur.com/mkfRQn8.png)
+![alt text](https://i.imgur.com/SFNrGon.png)
 
 ---
 
@@ -17,7 +17,7 @@ This tool is Windows only. For multiplatform and more features check out the CLI
 
 ### Installation:
 
-1. Download [ffmpeg and ffprobe](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases). (For Windows 7: [NotEnoughEncodes](https://ci.appveyor.com/project/Alkl/notenoughencodes/builds/31209233/artifacts))
+1. Download [ffmpeg and ffprobe](https://www.ffmpeg.org/download.html), [aomenc](https://ci.appveyor.com/project/marcomsousa/build-aom/history) and [NotEnoughEncodes](https://github.com/Alkl58/NotEnoughEncodes/releases). (For Windows 7: [NotEnoughEncodes](https://ci.appveyor.com/project/Alkl/notenoughencodes/branch/Windows-7-Support/artifacts))
 2. Create a new Folder and put all .exe files in them (ffmpeg, ffprobe, aomenc and NotEnoughEncodes.exe)
 
 ### System Requirements:
