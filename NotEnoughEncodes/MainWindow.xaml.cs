@@ -133,13 +133,28 @@ namespace NotEnoughEncodes
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (batchEncoding == false || batchEncoding == null)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                    TextBoxInputVideo.Text = openFileDialog.FileName;
+                GetStreamFps(TextBoxInputVideo.Text);
+                GetStreamLength(TextBoxInputVideo.Text);
+            }
+            else if (batchEncoding == true)
+            {
+                System.Windows.Forms.FolderBrowserDialog browse = new System.Windows.Forms.FolderBrowserDialog();
+                if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    TextBoxInputVideo.Text = browse.SelectedPath;
+                }
+
+            }
             //Open File Dialog
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                TextBoxInputVideo.Text = openFileDialog.FileName;
+
             //Set the Stream Framerate from the video
-            GetStreamFps(TextBoxInputVideo.Text);
-            GetStreamLength(TextBoxInputVideo.Text);
+
+
             
         }
         public string streamLength;
@@ -176,10 +191,21 @@ namespace NotEnoughEncodes
 
         private void ButtonOutput_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Matroska|*.mkv";
-            if (saveFileDialog.ShowDialog() == true)
-                TextBoxOutputVideo.Text = saveFileDialog.FileName;
+            if (batchEncoding == false || batchEncoding == null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Matroska|*.mkv";
+                if (saveFileDialog.ShowDialog() == true)
+                    TextBoxOutputVideo.Text = saveFileDialog.FileName;
+            }else if (batchEncoding == true)
+            {
+                System.Windows.Forms.FolderBrowserDialog browse = new System.Windows.Forms.FolderBrowserDialog();
+                if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    TextBoxOutputVideo.Text = browse.SelectedPath;
+                }
+            }
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -262,12 +288,159 @@ namespace NotEnoughEncodes
                 if (Cancel.CancelAll == false)
                 {
                     //Start MainClass
-                    MainClass();
+                    if (batchEncoding == false)
+                    {
+                        MainClass();
+                    }else if (batchEncoding == true)
+                    {
+                        batchEncode();
+                    }
                 }
                 else
                 {
                     pLabel.Dispatcher.Invoke(() => pLabel.Content = "Process has been canceled!", DispatcherPriority.Background);
                 }
+            }
+        }
+        public string batchencodefile;
+        public string batchencodeoutputfile;
+        public bool batchFilefinished;
+        public DateTime starttimea;
+        public async void batchEncode()
+        {
+            batchFilefinished = true;
+            DirectoryInfo batchfiles = new DirectoryInfo(TextBoxInputVideo.Text);
+            foreach (var file in batchfiles.GetFiles())
+            {
+                batchFilefinished = false;
+                batchencodefile = TextBoxInputVideo.Text + "\\" + file;
+                batchencodeoutputfile = TextBoxOutputVideo.Text + "\\" + file + "_av1.mkv";
+
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Starting...", DispatcherPriority.Background);
+                //This will be set if you Press Encode after a already finished encode
+                prgbar.Maximum = 100;
+                prgbar.Value = 0;
+
+                //Sets the working directory
+                string currentPath = Directory.GetCurrentDirectory();
+                //Checks if Chunks folder exist, if no it creates Chunks folder
+                if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
+                    Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
+                GetStreamFps(batchencodefile);
+                GetStreamLength(batchencodefile);
+
+                string customSettings = TextBoxCustomSettings.Text;
+                string chunkLength = TextBoxChunkLength.Text;
+
+                string streamLenghtVideo = streamLength;
+                string encMode = ComboBoxEncMode.Text;
+                string streamFrameRate = streamFps;
+                string fps = TextBoxFramerate.Text;
+
+                int maxConcurrency = Int16.Parse(TextBoxNumberWorkers.Text);
+                int kfmaxdist = Int16.Parse(TextBoxKeyframeInterval.Text);
+                int encThreads = Int16.Parse(TextBoxEncThreads.Text);
+                int bitDepth = Int16.Parse(ComboBoxBitdepth.Text);
+                int cpuUsed = Int16.Parse(ComboBoxCpuUsed.Text);
+                int cqLevel = Int16.Parse(TextBoxcqLevel.Text);
+
+                int tilecols = Int16.Parse(TextBoxTileCols.Text);
+                int tilerows = Int16.Parse(TextBoxTileRows.Text);
+                int nrPasses = Int16.Parse(ComboBoxPasses.Text);
+
+                bool customSettingsbool = false;
+                bool audioOutput = false;
+                bool reencode = false;
+                bool resume = false;
+
+                if (CheckBoxReencode.IsChecked == true)
+                {
+                    reencode = true;
+                }
+                if (CheckBoxEnableAudio.IsChecked == true)
+                {
+                    audioOutput = true;
+                }
+                if (CheckBoxCustomSettings.IsChecked == true)
+                {
+                    customSettingsbool = true;
+                }
+
+                Console.WriteLine(batchencodefile);
+
+                await Task.Run(() => Splitting(batchencodefile, resume, logging, reencode, chunkLength));
+                //Audio Encoding
+                if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
+                {
+                    await Task.Run(() => EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath));
+                }
+                if (CheckBoxResume.IsChecked == false)
+                {
+                    await Task.Run(() => Rename(currentPath));
+                }
+
+                //Create Array List with all Chunks
+                string[] chunks;
+                //Sets the Chunks directory
+                string sdira = currentPath + "\\Chunks";
+                //Add all Files in Chunks Folder to array
+                chunks = Directory.GetFiles(sdira, "*mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
+                //Parse Textbox Text to String for loop threading
+
+                string finalEncodeMode = "";
+
+                //Sets the Encoding Mode
+                if (encMode == "q")
+                {
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to q", "log.log");
+                    }
+                    finalEncodeMode = " --end-usage=q --cq-level=" + cqLevel;
+                }
+                else if (encMode == "vbr")
+                {
+                    //If vbr set finalEncodeMode
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to vbr", "log.log");
+                    }
+                    finalEncodeMode = " --end-usage=vbr --target-bitrate=" + cqLevel;
+                }
+                else if (encMode == "cbr")
+                {
+                    //If cbr set finalEncodeMode
+                    if (logging == true)
+                    {
+                        WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Set Encode Mode to cbr", "log.log");
+                    }
+                    finalEncodeMode = " --end-usage=cbr --target-bitrate=" + cqLevel;
+                }
+
+                string allSettingsAom = "";
+                //Sets aom settings to custom or preset
+                if (customSettingsbool == true)
+                {
+                    allSettingsAom = " " + customSettings;
+                    //Console.WriteLine(allSettingsAom);
+                }
+                else if (customSettingsbool == false)
+                {
+                    allSettingsAom = " --cpu-used=" + cpuUsed + " --threads=" + encThreads + finalEncodeMode + " --bit-depth=" + bitDepth + " --tile-columns=" + tilecols + " --fps=" + fps + " --tile-rows=" + tilerows + " --kf-max-dist=" + kfmaxdist;
+                    //Console.WriteLine(allSettingsAom);
+                }
+
+                prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
+                //prgbar.Maximum = chunks.Count();
+                //Set the Progresslabel to 0 out of Number of chunks, because people would think that it doesnt to anything
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "0 / " + prgbar.Maximum, DispatcherPriority.Background);
+
+                //Starts the async task
+                await Task.Run(() => Encode(maxConcurrency, nrPasses, allSettingsAom, resume, batchencodeoutputfile, audioOutput, streamLenghtVideo, fps, streamFrameRate));
+                //Set Maximum of Progressbar
+
+                await Task.Run(() => Concat(batchencodeoutputfile, audioOutput, starttimea));
+
             }
         }
 
@@ -279,6 +452,8 @@ namespace NotEnoughEncodes
 
         public void MainClass()
         {
+            string videoInput ="";
+            string videoOutput = "";
             if (logging == true)
             {
                 WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " MainClass started", "log.log");
@@ -294,9 +469,18 @@ namespace NotEnoughEncodes
 
             //Sets the variable for input / output of video
             string customSettings = TextBoxCustomSettings.Text;
-            string videoOutput = TextBoxOutputVideo.Text;
             string chunkLength = TextBoxChunkLength.Text;
-            string videoInput = TextBoxInputVideo.Text;
+            if (batchEncoding == false)
+            {
+                videoInput = TextBoxInputVideo.Text;
+                videoOutput = TextBoxOutputVideo.Text;
+            }
+            else if (batchEncoding == true)
+            {
+                videoInput = batchencodefile;
+                videoOutput = batchencodeoutputfile;
+            }
+            
             string streamLenghtVideo = streamLength;
             string encMode = ComboBoxEncMode.Text;
             string streamFrameRate = streamFps;
@@ -656,7 +840,7 @@ namespace NotEnoughEncodes
 
             //Starts the Timer for eta calculation
             DateTime starttime = DateTime.Now;
-
+            starttimea = starttime;
             //Parallel Encoding - aka some blackmagic
             using (SemaphoreSlim concurrencySemaphore = new SemaphoreSlim(maxConcurrency))
             {
@@ -750,7 +934,11 @@ namespace NotEnoughEncodes
             }
 
             //Mux all Encoded chunks back together
-            Concat(videoOutput, audioOutput, starttime);
+            if (batchEncoding == false)
+            {
+                Concat(videoOutput, audioOutput, starttime);
+            }
+            
         }
 
         //Mux ivf Files back together
@@ -831,6 +1019,11 @@ namespace NotEnoughEncodes
                 if (Cancel.CancelAll == false)
                 {
                     File.Delete("unifnished_job.ini");
+                }
+                if (batchEncoding == true)
+                {
+                    DeleteTempFiles();
+                    batchFilefinished = true;
                 }
                 if (shutdownafterencode == true)
                 {
@@ -1038,7 +1231,7 @@ namespace NotEnoughEncodes
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:0 AudioExtracted\\audio0.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:1 AudioExtracted\\audio1.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:2 AudioExtracted\\audio2.mkv & ffmpeg.exe -i " + videoInput + " -vn -map_metadata -1 -c copy -map 0:a:3 AudioExtracted\\audio3.mkv";
+            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 AudioExtracted\\audio0.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 AudioExtracted\\audio1.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 AudioExtracted\\audio2.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 AudioExtracted\\audio3.mkv";
             Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
@@ -1061,7 +1254,7 @@ namespace NotEnoughEncodes
                     //Encodes the Audio to the given format
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
-                    startInfo.Arguments = "/C ffmpeg.exe -i AudioExtracted\\" + file + " " + allAudioSettings + "-vn AudioEncoded\\" + file;
+                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + "AudioExtracted\\" + file + '\u0022' + " " + allAudioSettings + "-vn " + '\u0022' + "AudioEncoded\\" + file + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
@@ -1113,6 +1306,13 @@ namespace NotEnoughEncodes
             shutdownafterencode = shutdown;
             batchEncoding = batch;
             enableCustomSettings = loadsettings;
+            
+
+        }
+
+        public void SetBatch()
+        {
+                Input.Content = "Open Folder";
         }
 
         private void ComboBoxEncMode_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -23,6 +23,10 @@ namespace NotEnoughEncodes
             {
                 CheckBoxCustomSettings.IsChecked = true;
             }
+            if (MainWindow.batchEncoding == true)
+            {
+                CheckBoxBatchMode.IsChecked = true;
+            }
         }
 
         private bool checkboxlogging;
@@ -44,6 +48,10 @@ namespace NotEnoughEncodes
             {
                 customSettings = true;
             }
+            if (CheckBoxBatchMode.IsChecked == true)
+            {
+                batchEncode = true;
+            }
             SendSettingsToSave(checkboxlogging, shutDownAfterEncode, batchEncode, customSettings);
         }
 
@@ -53,5 +61,6 @@ namespace NotEnoughEncodes
             //Closes the Window after Settings have been send to main window
             this.Close();
         }
+
     }
 }
