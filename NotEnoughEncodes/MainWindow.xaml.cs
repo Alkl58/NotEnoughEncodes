@@ -39,14 +39,7 @@ namespace NotEnoughEncodes
             CheckDependencies();
             //Load Settings
             ReadSettings();
-
-            //If settings.ini exist -> Set all Values
-            bool fileExist = File.Exists("encoded.txt");
-
-            if (fileExist)
-            {
-                MessageBox.Show("May have detected unfished / uncleared Encode. If you want to resume an unfinished Job, check the Checkbox " + '\u0022' + "Resume" + '\u0022');
-            }
+            LoadUnfinishedJob();
         }
 
         private void CheckDependencies()
@@ -353,6 +346,7 @@ namespace NotEnoughEncodes
             {
                 customSettingsbool = true;
             }
+            SaveUnfinishedJob();
             Async(videoInput, currentPath, videoOutput, resume, logging, reencode, chunkLength, audioBitrate, audioCodec, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, customSettingsbool, customSettings, audioOutput, streamLenghtVideo, streamFrameRate);
         }
 
@@ -834,7 +828,10 @@ namespace NotEnoughEncodes
                     process.WaitForExit();
                 }
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttime).ToString(), DispatcherPriority.Background);
-
+                if (Cancel.CancelAll == false)
+                {
+                    File.Delete("unifnished_job.ini");
+                }
                 if (shutdownafterencode == true)
                 {
                     if (Cancel.CancelAll == false)
@@ -1153,5 +1150,102 @@ namespace NotEnoughEncodes
             audioBitrate = AudioBitrate;
         }
 
+        public void SaveUnfinishedJob()
+        {
+            //Saves all Current Settings to a file
+            string audioCheckBox = CheckBoxEnableAudio.IsChecked.ToString();
+            string customSettingsBool = enableCustomSettings.ToString();
+            string customSettings = TextBoxCustomSettings.Text;
+            string maxConcurrency = TextBoxNumberWorkers.Text;
+            string kfmaxdist = TextBoxKeyframeInterval.Text;
+            string chunkLength = TextBoxChunkLength.Text;
+            string audioSettingsBitrate = audioBitrate;
+            string encThreads = TextBoxEncThreads.Text;
+            string bitDepth = ComboBoxBitdepth.Text;
+            string tilecols = TextBoxTileCols.Text;
+            string tilerows = TextBoxTileRows.Text;
+            string audioSettingsCodec = audioCodec;
+            string encMode = ComboBoxEncMode.Text;
+            string cpuUsed = ComboBoxCpuUsed.Text;
+            string nrPasses = ComboBoxPasses.Text;
+            string cqLevel = TextBoxcqLevel.Text;
+            string fps = TextBoxFramerate.Text;
+            string videoInput = TextBoxInputVideo.Text;
+            string videoOutput = TextBoxOutputVideo.Text;
+
+            //Saves custom settings in settings_custom.ini
+            if (CheckBoxCustomSettings.IsChecked == true)
+            {
+                string[] linescustom = { customSettings };
+                File.WriteAllLines("unifnished_job_settings_custom.ini", linescustom);
+            }
+
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput };
+            File.WriteAllLines("unifnished_job.ini", lines);
+        }
+
+        public void LoadUnfinishedJob()
+        {
+            try
+            {
+                //If unifnished_job.ini exist -> Set all Values
+                bool fileExist = File.Exists("unifnished_job.ini");
+
+                if (fileExist)
+                {
+
+                    if (MessageBox.Show("Unfinished Job detected. Load unfinished job? Press No to delete the unfinished Job files.",
+                        "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        string[] lines = File.ReadAllLines("unifnished_job.ini");
+
+                        TextBoxNumberWorkers.Text = lines[0];
+                        ComboBoxCpuUsed.Text = lines[1];
+                        ComboBoxBitdepth.Text = lines[2];
+                        TextBoxEncThreads.Text = lines[3];
+                        TextBoxcqLevel.Text = lines[4];
+                        TextBoxKeyframeInterval.Text = lines[5];
+                        TextBoxTileCols.Text = lines[6];
+                        TextBoxTileRows.Text = lines[7];
+                        ComboBoxPasses.Text = lines[8];
+                        TextBoxFramerate.Text = lines[9];
+                        ComboBoxEncMode.Text = lines[10];
+                        TextBoxChunkLength.Text = lines[11];
+                        audioCodec = lines[12];
+                        audioBitrate = lines[13];
+                        if (lines[14] == "True")
+                        {
+                            enableCustomSettings = true;
+                            CheckBoxCustomSettings.IsChecked = true;
+                        }
+                        if (lines[15] == "True")
+                        {
+                            CheckBoxEnableAudio.IsChecked = true;
+                        }
+                        TextBoxInputVideo.Text = lines[16];
+                        TextBoxOutputVideo.Text = lines[17];
+                        CheckBoxResume.IsChecked = true;
+                        GetStreamLength(TextBoxInputVideo.Text);
+                        GetStreamFps(TextBoxInputVideo.Text);
+                        //Reads custom settings to settings_custom.ini
+                        bool customFileExist = File.Exists("unifnished_job_settings_custom.ini");
+                        if (customFileExist)
+                        {
+                            string[] linesa = File.ReadAllLines("unifnished_job_settings_custom.ini");
+                            TextBoxCustomSettings.Text = linesa[0];
+                        }
+                    }
+                    else
+                    {
+                        File.Delete("unifnished_job.ini");
+                        DeleteTempFiles();
+                    }
+
+                }
+                    
+            }
+            catch { }
+
+        }
     }
 }
