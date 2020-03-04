@@ -21,6 +21,7 @@ namespace NotEnoughEncodes
         public static bool enableCustomSettings = false;
         public static string audioCodec;
         public static string audioBitrate;
+        public static bool deleteTempFiles = false;
 
         public MainWindow()
         {
@@ -145,8 +146,6 @@ namespace NotEnoughEncodes
 
         public static string streamLength;
         public string streamFps;
-
-
 
         private void ButtonOutput_Click(object sender, RoutedEventArgs e)
         {
@@ -775,9 +774,8 @@ namespace NotEnoughEncodes
             }
 
             //Mux all Encoded chunks back together
-            if (batchEncoding == false)
+            if (batchEncoding == false && Cancel.CancelAll == false)
             {
-                
                 LocalConcat(videoOutput, audioOutput, starttime);
             }
         }
@@ -790,6 +788,10 @@ namespace NotEnoughEncodes
             if (Cancel.CancelAll == false)
             {
                 File.Delete("unifnished_job.ini");
+            }
+            if (deleteTempFiles == true)
+            {
+                SmallScripts.DeleteTempFiles();
             }
         }
 
@@ -875,13 +877,14 @@ namespace NotEnoughEncodes
             settings.Show();
         }
 
-        public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch, bool loadsettings)
+        public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch, bool loadsettings, bool delete)
         {
             //Gets the Settings from the Settings Window and sets them in MainWindow
             logging = Settingslogging;
             shutdownafterencode = shutdown;
             batchEncoding = batch;
             enableCustomSettings = loadsettings;
+            deleteTempFiles = delete;
         }
 
         public void SetBatch()
@@ -1022,6 +1025,7 @@ namespace NotEnoughEncodes
         {
             numberOfAudioTracks = count;
         }
+
         public static void SetStreamLength(string length)
         {
             streamLength = length;

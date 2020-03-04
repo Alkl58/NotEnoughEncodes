@@ -432,6 +432,6 @@
         <Button x:Name="ButtonSettings" Content="Program Settings" HorizontalAlignment="Left" Margin="335,307,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_5" Background="#99232323" Foreground="White" BorderBrush="#FFC3C3C3" Height="25" />
         <Label x:Name="LabelQ" Content="Quality" HorizontalAlignment="Left" Margin="134,152,0,0" VerticalAlignment="Top" Width="83" Background="#99232323" Foreground="White" HorizontalContentAlignment="Center" />
         <Label x:Name="LabelVbr" Content="Bitrate (kbps)" HorizontalAlignment="Left" Margin="134,152,0,0" VerticalAlignment="Top" Width="83" Background="#99232323" Foreground="White" HorizontalContentAlignment="Center" Visibility="Collapsed" />
-        <Button x:Name="ButtonAudioSettings" Content="Audio Settings" HorizontalAlignment="Left" Margin="125,306,0,0" VerticalAlignment="Top" Width="116" Click="ButtonAudioSettings_Click" Height="26" Background="#99232323" Foreground="White" BorderBrush="#FFC3C3C3"/>
+        <Button x:Name="ButtonAudioSettings" Content="Audio Settings" HorizontalAlignment="Left" Margin="125,306,0,0" VerticalAlignment="Top" Width="116" Click="ButtonAudioSettings_Click" Height="26" Background="#99232323" Foreground="White" BorderBrush="#FFC3C3C3" />
     </Grid>
 </Window>

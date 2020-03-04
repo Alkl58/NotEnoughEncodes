@@ -27,12 +27,17 @@ namespace NotEnoughEncodes
             {
                 CheckBoxBatchMode.IsChecked = true;
             }
+            if (MainWindow.deleteTempFiles == true)
+            {
+                CheckBoxDeleteTempFiles.IsChecked = true;
+            }
         }
 
         private bool checkboxlogging;
         private bool shutDownAfterEncode;
         private bool batchEncode;
         private bool customSettings;
+        private bool deletefiles;
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -52,15 +57,18 @@ namespace NotEnoughEncodes
             {
                 batchEncode = true;
             }
-            SendSettingsToSave(checkboxlogging, shutDownAfterEncode, batchEncode, customSettings);
+            if (CheckBoxDeleteTempFiles.IsChecked == true)
+            {
+                deletefiles = true;
+            }
+            SendSettingsToSave(checkboxlogging, shutDownAfterEncode, batchEncode, customSettings, deletefiles);
         }
 
-        private void SendSettingsToSave(bool enableLog, bool shutDown, bool batch, bool settings)
+        private void SendSettingsToSave(bool enableLog, bool shutDown, bool batch, bool settings, bool delete)
         {
-            MainWindow.SaveSettings(enableLog, shutDown, batch, settings);
+            MainWindow.SaveSettings(enableLog, shutDown, batch, settings, delete);
             //Closes the Window after Settings have been send to main window
             this.Close();
         }
-
     }
 }

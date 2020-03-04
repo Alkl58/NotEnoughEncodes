@@ -5,7 +5,7 @@ using System.IO;
 namespace NotEnoughEncodes
 {
     //Muxing all Files back together
-    class Concatenate
+    internal class Concatenate
     {
         public static void Concat(string videoOutput, bool audioOutput, DateTime starttime)
         {
@@ -87,7 +87,6 @@ namespace NotEnoughEncodes
                         Process.Start("shutdown.exe", "/s /t 0");
                     }
                 }
-
             }
         }
     }

@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace NotEnoughEncodes
 {
-    class SmallScripts
+    internal class SmallScripts
     {
         //Kills all aomenc and ffmpeg instances
         public static void KillInstances()
@@ -43,7 +43,6 @@ namespace NotEnoughEncodes
 
         //Some smaller Blackmagic, so parallel Workers won't lockdown the encoded.txt file
         private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
-        
 
         public static void WriteToFileThreadSafe(string text, string path)
         {
@@ -64,6 +63,7 @@ namespace NotEnoughEncodes
                 _readWriteLock.ExitWriteLock();
             }
         }
+
         //Checks the dependencies (ffmpeg, aomenc, ffprobe)
         public static void CheckDependencies()
         {
@@ -75,7 +75,9 @@ namespace NotEnoughEncodes
                 MessageBox.Show("Couldn't find all depedencies: \n aomenc found: " + aomencExist + "\n ffmpeg found: " + ffmpegExist + " \n ffprobe found: " + ffprobeExist);
             }
         }
+
         private static string streamLength;
+
         public static void GetStreamLength(string fileinput)
         {
             string input;
@@ -104,7 +106,5 @@ namespace NotEnoughEncodes
             MainWindow.SetStreamLength(streamLength);
             process.WaitForExit();
         }
-
-
     }
 }

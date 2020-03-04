@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+
 namespace NotEnoughEncodes
 {
     /// <summary>
@@ -26,17 +27,18 @@ namespace NotEnoughEncodes
             if (text == "MP3 VBR")
             {
                 LabelBitrate.Content = "Quality (0-9)";
-            }else if (text == "Copy Audio")
+            }
+            else if (text == "Copy Audio")
             {
                 TextBoxAudioBitrate.IsEnabled = false;
-            }else if (TextBoxAudioBitrate != null)
+            }
+            else if (TextBoxAudioBitrate != null)
             {
                 if (TextBoxAudioBitrate.IsEnabled == false || text != "MP3 VBR")
                 {
                     TextBoxAudioBitrate.IsEnabled = true;
                     LabelBitrate.Content = "Bitrate (kbps)";
                 }
-
             }
         }
 
@@ -50,6 +52,5 @@ namespace NotEnoughEncodes
             MainWindow.SaveAudioSettings(ComboBoxAudioCodec.Text, TextBoxAudioBitrate.Text);
             this.Close();
         }
-
     }
 }

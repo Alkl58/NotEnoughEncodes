@@ -291,39 +291,38 @@
         </Style>
     </Window.Resources>
     <Window.Background>
-        <ImageBrush ImageSource="bgneu1.jpg"/>
+        <ImageBrush ImageSource="bgneu1.jpg" />
     </Window.Background>
     <Grid>
 
         <ComboBox x:Name="ComboBoxAudioCodec" Width="138" VerticalAlignment="Top" Style="{DynamicResource ComboBoxStyle1}" RenderTransformOrigin="0.5,0.5" OverridesDefaultStyle="True" Margin="130,22,0,0" HorizontalAlignment="Left" Foreground="White" Background="Black" BorderBrush="#FF4F4F4F" SelectionChanged="ComboBoxAudioCodec_SelectionChanged">
             <ComboBox.RenderTransform>
                 <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleY="0.31"/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="0.324"/>
+                    <ScaleTransform />
+                    <SkewTransform AngleY="0.31" />
+                    <RotateTransform />
+                    <TranslateTransform Y="0.324" />
                 </TransformGroup>
             </ComboBox.RenderTransform>
             <ComboBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ComboBoxItem}">
-                    <Setter Property="Background" Value="#FF383838"/>
-                    <Setter Property="BorderBrush" Value="#FF383838"/>
-                    <Setter Property="Opacity" Value="80"/>
+                    <Setter Property="Background" Value="#FF383838" />
+                    <Setter Property="BorderBrush" Value="#FF383838" />
+                    <Setter Property="Opacity" Value="80" />
                 </Style>
             </ComboBox.ItemContainerStyle>
-            <ComboBoxItem IsSelected="True" Foreground="White" Content="Opus" Background="#FF383838"/>
-            <ComboBoxItem Content="Opus 5.1"/>
-            <ComboBoxItem Content="AAC CBR" Foreground="White"/>
-            <ComboBoxItem Content="Copy Audio" Foreground="White"/>
-            <ComboBoxItem Content="AC3"/>
-            <ComboBoxItem Content="FLAC"/>
-            <ComboBoxItem Content="MP3 CBR"/>
-            <ComboBoxItem Content="MP3 VBR"/>
+            <ComboBoxItem IsSelected="True" Foreground="White" Content="Opus" Background="#FF383838" />
+            <ComboBoxItem Content="Opus 5.1" />
+            <ComboBoxItem Content="AAC CBR" Foreground="White" />
+            <ComboBoxItem Content="Copy Audio" Foreground="White" />
+            <ComboBoxItem Content="AC3" />
+            <ComboBoxItem Content="FLAC" />
+            <ComboBoxItem Content="MP3 CBR" />
+            <ComboBoxItem Content="MP3 VBR" />
         </ComboBox>
         <Label Content="Select Codec" HorizontalAlignment="Left" Margin="39,20,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
         <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="131,59,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="137" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" VerticalContentAlignment="Center" />
-        <Button Content="Save" HorizontalAlignment="Left" Margin="65,126,0,0" VerticalAlignment="Top" Width="176" Height="51" Background="#99232323" BorderBrush="White" Foreground="White" Click="Button_Click"/>
+        <Button Content="Save" HorizontalAlignment="Left" Margin="65,126,0,0" VerticalAlignment="Top" Width="176" Height="51" Background="#99232323" BorderBrush="White" Foreground="White" Click="Button_Click" />
         <Label x:Name="LabelBitrate" Content="Bitrate (kbps)" HorizontalAlignment="Left" Margin="39,59,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
-
     </Grid>
 </Window>

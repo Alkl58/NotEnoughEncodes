@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace NotEnoughEncodes
 {
-    class AudioEncode
+    internal class AudioEncode
     {
         public static void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
         {
@@ -133,7 +133,6 @@ namespace NotEnoughEncodes
             int audioCount = Directory.GetFiles("AudioEncoded", "*mkv", SearchOption.TopDirectoryOnly).Length;
             //Sets the number of AudioTracks of the concat process
             MainWindow.SetNumberOfAudioTracks(audioCount);
-            
         }
     }
 }
