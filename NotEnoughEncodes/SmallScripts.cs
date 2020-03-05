@@ -32,13 +32,27 @@ namespace NotEnoughEncodes
             try
             {
                 //Delete Files, because of lazy dump****
-                File.Delete("encoded.txt");
                 Directory.Delete("Chunks", true);
+                File.Delete("splitted.log");
+                File.Delete("encoded.txt");
                 Directory.Delete("AudioExtracted", true);
                 Directory.Delete("AudioEncoded", true);
                 File.Delete("no_audio.mkv");
             }
             catch { }
+        }
+        public static void DeleteTempFilesDir(string path)
+        {
+            try
+            {
+                Directory.Delete(path + "\\Chunks", true);
+                File.Delete(path + "\\splitted.log");
+                Directory.Delete(path + "\\AudioExtracted", true);
+                Directory.Delete(path + "\\AudioEncoded", true);
+                File.Delete(path + "\\no_audio.mkv");
+            }
+            catch { }
+
         }
 
         //Some smaller Blackmagic, so parallel Workers won't lockdown the encoded.txt file

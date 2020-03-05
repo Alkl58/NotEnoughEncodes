@@ -107,30 +107,31 @@ namespace NotEnoughEncodes
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 AudioExtracted\\audio0.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 AudioExtracted\\audio1.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 AudioExtracted\\audio2.mkv & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 AudioExtracted\\audio3.mkv";
+            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
             Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
-            DirectoryInfo AudioExtracted = new DirectoryInfo("AudioExtracted");
+            Console.WriteLine(currentPath + "\\AudioExtracted");
+            DirectoryInfo AudioExtracted = new DirectoryInfo(currentPath + "\\AudioExtracted");
             //Loops through all mkv files in AudioExtracted
             foreach (var file in AudioExtracted.GetFiles("*.mkv"))
             {
                 //Directory.Move(file.FullName, filepath + "\\TextFiles\\" + file.Name);
                 //Get the Filesize, because the command above also creates mkv files even if there is not audiostream (filesize = 0)
-                long length = new FileInfo("AudioExtracted\\" + file).Length;
+                long length = new FileInfo(currentPath + "\\AudioExtracted\\" + file).Length;
                 //Console.WriteLine(length);
                 //If Filesize = 0 -> delete file
                 if (length == 0)
                 {
-                    File.Delete("AudioExtracted\\" + file);
+                    File.Delete(currentPath + "\\AudioExtracted\\" + file);
                 }
                 else if (length > 1)
                 {
                     //Encodes the Audio to the given format
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
-                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + "AudioExtracted\\" + file + '\u0022' + " " + allAudioSettings + "-vn " + '\u0022' + "AudioEncoded\\" + file + '\u0022';
+                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\AudioExtracted\\" + file + '\u0022' + " " + allAudioSettings + "-vn " + '\u0022' + currentPath + "\\AudioEncoded\\" + file + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
@@ -138,7 +139,7 @@ namespace NotEnoughEncodes
                 }
             }
             //Counts the number of AudioFiles
-            int audioCount = Directory.GetFiles("AudioEncoded", "*mkv", SearchOption.TopDirectoryOnly).Length;
+            int audioCount = Directory.GetFiles(currentPath + "\\AudioEncoded", "*mkv", SearchOption.TopDirectoryOnly).Length;
             //Sets the number of AudioTracks of the concat process
             MainWindow.SetNumberOfAudioTracks(audioCount);
         }

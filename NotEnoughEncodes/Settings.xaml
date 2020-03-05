@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotEnoughEncodes"
         mc:Ignorable="d"
-        Title="Settings" Height="279.281" Width="424.585" ResizeMode="NoResize">
+        Title="Settings" Height="351.948" Width="559.251" ResizeMode="NoResize">
     <Window.Background>
         <ImageBrush ImageSource="bgneu1.jpg" />
     </Window.Background>
     <Grid>
         <CheckBox x:Name="CheckBoxLogging" Content="" HorizontalAlignment="Left" Margin="205,28,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
-        <Button Content="Save" HorizontalAlignment="Left" Margin="261,172,0,0" VerticalAlignment="Top" Width="122" Height="46" Click="Button_Click" Background="#99232323" Foreground="White" />
+        <Button Content="Save &amp; Exit" HorizontalAlignment="Left" Margin="405,124,0,0" VerticalAlignment="Top" Width="122" Height="46" Click="Button_Click" Background="#99232323" Foreground="White" />
         <CheckBox x:Name="CheckBoxShutdown" Content="" HorizontalAlignment="Left" Margin="205,57,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
         <CheckBox x:Name="CheckBoxCustomSettings" Content="" HorizontalAlignment="Left" Margin="205,88,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
         <CheckBox x:Name="CheckBoxBatchMode" Content="" HorizontalAlignment="Left" Margin="205,119,0,0" VerticalAlignment="Top" Foreground="White" Background="#7FFFFFFF" BorderBrush="White" Height="18" Width="194" />
@@ -21,5 +21,17 @@
         <Label Content="Enable custom Settings by default" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" Foreground="White" Background="#B2232323" />
         <Label Content="Enable Batch Encode Mode" HorizontalAlignment="Left" Margin="46,113,0,0" VerticalAlignment="Top" Foreground="White" Background="#B2232323" />
         <Label Content="Delete Temp Files after Encode" HorizontalAlignment="Left" Margin="28,144,0,0" VerticalAlignment="Top" Foreground="White" Background="#B2232323" />
+        <TextBox x:Name="TextBoxTempFolder" HorizontalAlignment="Left" Height="23" Margin="39,197,0,0" TextWrapping="Wrap" Text=" Select Temp Folder location" VerticalAlignment="Top" Width="399" Background="#99232323" SelectionBrush="White" Foreground="White"/>
+        <Button x:Name="ButtonTempFolder" Content="Select Folder" HorizontalAlignment="Left" Margin="443,197,0,0" VerticalAlignment="Top" Width="84" Height="23" Background="#99232323" Foreground="White" Click="Button_Click_1"/>
+        <TextBox x:Name="TextBoxAomenc" HorizontalAlignment="Left" Height="23" Margin="39,225,0,0" TextWrapping="Wrap" Text=" Select aomenc.exe location" VerticalAlignment="Top" Width="399" Background="#99232323" SelectionBrush="White" Foreground="White" SpellCheck.IsEnabled="True"/>
+        <TextBox x:Name="TextBoxFfmpeg" HorizontalAlignment="Left" Height="23" Margin="39,253,0,0" TextWrapping="Wrap" Text=" Select ffmpeg.exe location" VerticalAlignment="Top" Width="399" Background="#99232323" SelectionBrush="White" Foreground="White"/>
+        <TextBox x:Name="TextBoxFfprobe" HorizontalAlignment="Left" Height="23" Margin="39,281,0,0" TextWrapping="Wrap" Text=" Select ffprobe.exe location" VerticalAlignment="Top" Width="399" Background="#99232323" SelectionBrush="White" Foreground="White" SpellCheck.IsEnabled="True"/>
+        <Button x:Name="Button_aomenc" Content="Select Folder" HorizontalAlignment="Left" Margin="443,225,0,0" VerticalAlignment="Top" Width="84" Height="23" Background="#99232323" Foreground="White" Click="Button_aomenc_Click"/>
+        <Button x:Name="ButtonFfmpeg" Content="Select Folder" HorizontalAlignment="Left" Margin="443,253,0,0" VerticalAlignment="Top" Width="84" Height="23" Background="#99232323" Foreground="White" Click="ButtonFfmpeg_Click"/>
+        <CheckBox x:Name="CheckBoxTempFolder" Content="" HorizontalAlignment="Left" Margin="11,202,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" Checked="CheckBoxTempFolder_Checked" Unchecked="CheckBoxTempFolder_Unchecked"/>
+        <Button x:Name="ButtonFfprobe" Content="Select Folder" HorizontalAlignment="Left" Margin="443,281,0,0" VerticalAlignment="Top" Width="84" Height="23" Background="#99232323" Foreground="White" Click="ButtonFfprobe_Click"/>
+        <CheckBox x:Name="CheckBoxAomencFolder" Content="" HorizontalAlignment="Left" Margin="11,229,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" Checked="CheckBoxAomencFolder_Checked" Unchecked="CheckBoxAomencFolder_Unchecked" Width="16"/>
+        <CheckBox x:Name="CheckBoxFfmpegFolder" Content="" HorizontalAlignment="Left" Margin="11,257,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" Checked="CheckBoxFfmpegFolder_Checked" Unchecked="CheckBoxFfmpegFolder_Unchecked" Width="16"/>
+        <CheckBox x:Name="CheckBoxFfprobeFolder" Content="" HorizontalAlignment="Left" Margin="11,284,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" Checked="CheckBoxFfprobeFolder_Checked" Unchecked="CheckBoxFfprobeFolder_Unchecked" Width="16"/>
     </Grid>
 </Window>
