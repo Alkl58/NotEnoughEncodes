@@ -205,6 +205,7 @@ namespace NotEnoughEncodes
                         "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     SmallScripts.DeleteTempFiles();
+                    SmallScripts.DeleteTempFilesDir(tempFolder);
                     pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
                     //This will be set if you Press Encode after a already finished encode
                     prgbar.Maximum = 100;
@@ -312,7 +313,15 @@ namespace NotEnoughEncodes
                 prgbar.Value = 0;
 
                 //Sets the working directory
-                string currentPath = Directory.GetCurrentDirectory();
+                //Sets the working directory
+                if (tempFolderActive == false)
+                {
+                    currentPath = Directory.GetCurrentDirectory();
+                }
+                else if (tempFolderActive == true)
+                {
+                    currentPath = tempFolder;
+                }
                 //Checks if Chunks folder exist, if no it creates Chunks folder
                 if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                     Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
@@ -434,10 +443,11 @@ namespace NotEnoughEncodes
                 if (batchEncoding == true)
                 {
                     SmallScripts.DeleteTempFiles();
+                    SmallScripts.DeleteTempFilesDir(tempFolder);
                 }
                 if (Cancel.CancelAll == false)
                 {
-                    File.Delete("unifnished_job.ini");
+                    File.Delete("unfinished_job.ini");
                 }
             }
             if (shutdownafterencode == true)
@@ -831,11 +841,12 @@ namespace NotEnoughEncodes
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttimea).ToString(), DispatcherPriority.Background);
             if (Cancel.CancelAll == false)
             {
-                File.Delete("unifnished_job.ini");
+                File.Delete("unfinished_job.ini");
             }
             if (deleteTempFiles == true)
             {
                 SmallScripts.DeleteTempFiles();
+                SmallScripts.DeleteTempFilesDir(tempFolder);
             }
         }
 
@@ -855,6 +866,7 @@ namespace NotEnoughEncodes
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             SmallScripts.DeleteTempFiles();
+            SmallScripts.DeleteTempFilesDir(tempFolder);
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -1001,11 +1013,11 @@ namespace NotEnoughEncodes
             if (CheckBoxCustomSettings.IsChecked == true)
             {
                 string[] linescustom = { customSettings };
-                File.WriteAllLines("unifnished_job_settings_custom.ini", linescustom);
+                File.WriteAllLines("unfinished_job_settings_custom.ini", linescustom);
             }
 
             string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput };
-            File.WriteAllLines("unifnished_job.ini", lines);
+            File.WriteAllLines("unfinished_job.ini", lines);
         }
 
         public void LoadUnfinishedJob()
@@ -1013,14 +1025,14 @@ namespace NotEnoughEncodes
             try
             {
                 //If unifnished_job.ini exist -> Set all Values
-                bool fileExist = File.Exists("unifnished_job.ini");
+                bool fileExist = File.Exists("unfinished_job.ini");
 
                 if (fileExist)
                 {
                     if (MessageBox.Show("Unfinished Job detected. Load unfinished job? Press No to delete the unfinished Job files.",
                         "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
-                        string[] lines = File.ReadAllLines("unifnished_job.ini");
+                        string[] lines = File.ReadAllLines("unfinished_job.ini");
 
                         TextBoxNumberWorkers.Text = lines[0];
                         ComboBoxCpuUsed.Text = lines[1];
@@ -1051,17 +1063,18 @@ namespace NotEnoughEncodes
                         SmallScripts.GetStreamLength(TextBoxInputVideo.Text);
                         GetStreamFps(TextBoxInputVideo.Text);
                         //Reads custom settings to settings_custom.ini
-                        bool customFileExist = File.Exists("unifnished_job_settings_custom.ini");
+                        bool customFileExist = File.Exists("unfinished_job_settings_custom.ini");
                         if (customFileExist)
                         {
-                            string[] linesa = File.ReadAllLines("unifnished_job_settings_custom.ini");
+                            string[] linesa = File.ReadAllLines("unfinished_job_settings_custom.ini");
                             TextBoxCustomSettings.Text = linesa[0];
                         }
                     }
                     else
                     {
-                        File.Delete("unifnished_job.ini");
+                        File.Delete("unfinished_job.ini");
                         SmallScripts.DeleteTempFiles();
+                        SmallScripts.DeleteTempFilesDir(tempFolder);
                     }
                 }
             }

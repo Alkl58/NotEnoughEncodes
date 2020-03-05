@@ -40,6 +40,18 @@ namespace NotEnoughEncodes
             }
             catch { }
         }
+        public static void DeleteTempFilesDir(string path)
+        {
+            try
+            {
+                Directory.Delete(path + "\\Chunks", true);
+                Directory.Delete(path + "\\AudioExtracted", true);
+                Directory.Delete(path + "\\AudioEncoded", true);
+                File.Delete(path + "\\no_audio.mkv");
+            }
+            catch { }
+
+        }
 
         //Some smaller Blackmagic, so parallel Workers won't lockdown the encoded.txt file
         private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
