@@ -198,6 +198,12 @@ namespace NotEnoughEncodes
                 folderExist = Directory.Exists(tempFolderActive + "\\Chunks");
             }
 
+            if (prgbar.Value !=0)
+            {
+                prgbar.Value = 0;
+                prgbar.Maximum = 100;
+            }
+
 
             if (folderExist && Cancel.CancelAll == false && CheckBoxResume.IsChecked == false)
             {
@@ -609,6 +615,10 @@ namespace NotEnoughEncodes
                 process.StartInfo = startInfo;
                 process.Start();
                 process.WaitForExit();
+                if (Cancel.CancelAll == false)
+                {
+                    SmallScripts.WriteToFileThreadSafe("True", outputPath+"\\splitted.log");
+                }
             }
         }
 
@@ -630,15 +640,58 @@ namespace NotEnoughEncodes
                     SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode Started", "log.log");
                 }
 
-                foreach (string line in File.ReadLines("encoded.txt"))
+                bool FileExist = File.Exists("encoded.txt");
+                if (FileExist)
                 {
-                    //Removes all Items from Arraylist which are in encoded.txt
-                    chunks = chunks.Where(s => s != line).ToArray();
-                    if (logging == true)
+                    foreach (string line in File.ReadLines("encoded.txt"))
                     {
-                        SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode - Deleting " + line + " from Array", "log.log");
+                        //Removes all Items from Arraylist which are in encoded.txt
+                        chunks = chunks.Where(s => s != line).ToArray();
+                        if (logging == true)
+                        {
+                            SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Resume Mode - Deleting " + line + " from Array", "log.log");
+                        }
                     }
+                }else
+                {
+
+                    bool fileExist = File.Exists(currentPath + "\\splitted.log");
+
+                    if (fileExist)
+                    {
+                        string[] lines = File.ReadAllLines(currentPath +"\\splitted.log");
+                        
+                        if (lines[0] == "True")
+                        {
+                            if (MessageBox.Show("It appears that you toggled the resume mode, but there are no encoded chunks. Press Yes, to start Encoding of all Chunks. Press No, if you want to cancel!",
+                                    "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            {
+                                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
+                                //This will be set if you Press Encode after a already finished encode
+                            }
+                            else
+                            {
+                                Cancel.CancelAll = true;
+                            }
+
+                        }else
+                        {
+                            if (MessageBox.Show("It appears that you toggled the resume mode, but there are no encoded chunks and no information about a successfull splitting process. Press Yes, to start Encoding of all Chunks. Press No, if you want to cancel!",
+                                    "Resume", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            {
+                                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Restarting...", DispatcherPriority.Background);
+                                //This will be set if you Press Encode after a already finished encode
+                            }
+                            else
+                            {
+                                Cancel.CancelAll = true;
+                            }
+                        }
+
+                    }
+                        
                 }
+
                 //Set the Maximum Value of Progressbar
                 prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
             }
@@ -687,7 +740,10 @@ namespace NotEnoughEncodes
             }
 
             //Starts the async task
-            StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput, logging, streamLenghtVideo, fps, streamFrameRate, currentPath);
+            if (Cancel.CancelAll != true)
+            {
+                StartTask(maxConcurrency, nrPasses, allSettingsAom, resume, videoOutput, audioOutput, logging, streamLenghtVideo, fps, streamFrameRate, currentPath);
+            }
             //Set Maximum of Progressbar
             prgbar.Dispatcher.Invoke(() => prgbar.Maximum = chunks.Count(), DispatcherPriority.Background);
             //prgbar.Maximum = chunks.Count();
@@ -720,14 +776,20 @@ namespace NotEnoughEncodes
             //Add all Files in Chunks Folder to array
             chunks = Directory.GetFiles(sdira, "*mkv", SearchOption.AllDirectories).Select(x => Path.GetFileName(x)).ToArray();
 
-            if (resume == true)
+            bool FileExist = File.Exists("encoded.txt");
+
+            if (FileExist)
             {
-                //Removes all Items from Arraylist which are in encoded.txt
-                foreach (string line in File.ReadLines("encoded.txt"))
+                if (resume == true)
                 {
-                    chunks = chunks.Where(s => s != line).ToArray();
+                    //Removes all Items from Arraylist which are in encoded.txt
+                    foreach (string line in File.ReadLines("encoded.txt"))
+                    {
+                        chunks = chunks.Where(s => s != line).ToArray();
+                    }
                 }
             }
+                
 
             //Get Number of chunks for label of progressbar
             string labelstring = chunks.Count().ToString();
@@ -782,13 +844,29 @@ namespace NotEnoughEncodes
                                 {
                                     Process process = new Process();
                                     ProcessStartInfo startInfo = new ProcessStartInfo();
-                                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                    startInfo.FileName = "cmd.exe";
-                                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf="+ '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log" + '\u0022' + allSettingsAom + " --output=NUL";
-                                    process.StartInfo = startInfo;
-                                    //Console.WriteLine(startInfo.Arguments);
-                                    process.Start();
-                                    process.WaitForExit();
+
+                                    bool FileExistFirstPass = File.Exists(currentPath + "\\Chunks\\"  +items + "_1pass_successfull.log");
+                                    if (FileExistFirstPass != true)
+                                    {
+
+                                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                        startInfo.FileName = "cmd.exe";
+                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=" + '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log" + '\u0022' + allSettingsAom + " --output=NUL";
+                                        process.StartInfo = startInfo;
+                                        //Console.WriteLine(startInfo.Arguments);
+                                        process.Start();
+                                        process.WaitForExit();
+
+                                        if (Cancel.CancelAll == false)
+                                        {
+                                            //Write Item to file for later resume if something bad happens
+                                            SmallScripts.WriteToFileThreadSafe("", currentPath + "\\Chunks\\" + items + "_1pass_successfull.log");
+                                        }
+                                        else
+                                        {
+                                            SmallScripts.KillInstances();
+                                        }
+                                    }
 
                                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
