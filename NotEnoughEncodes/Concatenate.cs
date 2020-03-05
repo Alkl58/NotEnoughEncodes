@@ -7,11 +7,10 @@ namespace NotEnoughEncodes
     //Muxing all Files back together
     internal class Concatenate
     {
-        public static void Concat(string videoOutput, bool audioOutput, DateTime starttime)
+        public static void Concat(string videoOutput, bool audioOutput, string currentPath)
         {
             if (MainWindow.Cancel.CancelAll == false)
             {
-                string currentPath = Directory.GetCurrentDirectory();
 
                 string outputfilename = videoOutput;
 
@@ -21,8 +20,8 @@ namespace NotEnoughEncodes
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 //FFmpeg Arguments
-                startInfo.Arguments = "/C (for %i in (Chunks\\*.ivf) do @echo file '%i') > Chunks\\mylist.txt";
-                //Console.WriteLine(startInfo.Arguments);
+                startInfo.Arguments = "/C (for %i in ("+ '\u0022' + currentPath + "\\Chunks\\*.ivf"+ '\u0022' + ") do @echo file '%i') > "+ '\u0022' + currentPath+"\\Chunks\\mylist.txt"+ '\u0022';
+                Console.WriteLine(startInfo.Arguments);
                 process.StartInfo = startInfo;
                 process.Start();
                 process.WaitForExit();
@@ -33,8 +32,8 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
-                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy " + '\u0022' + outputfilename + '\u0022';
-                    //Console.WriteLine(startInfo.Arguments);
+                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i " + '\u0022' + currentPath + "\\Chunks\\mylist.txt"+ '\u0022' + " -c copy " + '\u0022' + outputfilename + '\u0022';
+                    Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
@@ -45,8 +44,8 @@ namespace NotEnoughEncodes
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
                     //FFmpeg Arguments
-                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i Chunks\\mylist.txt -c copy no_audio.mkv";
-                    //Console.WriteLine(startInfo.Arguments);
+                    startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i " + '\u0022' + currentPath + "\\Chunks\\mylist.txt" + '\u0022' + " -c copy "+ '\u0022' + currentPath+"\\no_audio.mkv" + '\u0022';
+                    Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
@@ -58,22 +57,22 @@ namespace NotEnoughEncodes
                     //Sets the mapping of the video and audiostreams and muxes them
                     if (MainWindow.numberOfAudioTracks == 1)
                     {
-                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv  -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
                     }
                     else if (MainWindow.numberOfAudioTracks == 2)
                     {
-                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv"+ '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
                     }
                     else if (MainWindow.numberOfAudioTracks == 3)
                     {
-                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -i AudioEncoded\\audio2.mkv -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
                     }
                     else if (MainWindow.numberOfAudioTracks == 4)
                     {
-                        startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audio0.mkv -i AudioEncoded\\audio1.mkv -i AudioEncoded\\audio2.mkv -i AudioEncoded\\audio3.mkv -map 0:v -map 1:a -map 2:a -map 3:a -map 4:a -c copy " + '\u0022' + outputfilename + '\u0022';
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -map 4:a -c copy " + '\u0022' + outputfilename + '\u0022';
                     }
                     //startInfo.Arguments = "/C ffmpeg.exe -i no_audio.mkv -i AudioEncoded\\audioOutput.mkv -map 0:0 -map 0:1 -map 0:2 -c copy " + '\u0022' + outputfilename + '\u0022';
-                    //Console.WriteLine(startInfo.Arguments);
+                    Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;
                     process.Start();
                     process.WaitForExit();
