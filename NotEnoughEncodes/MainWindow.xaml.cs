@@ -571,6 +571,7 @@ namespace NotEnoughEncodes
             if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
                 await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath));
+                await Task.Run(() => SmallScripts.WriteToFileThreadSafe(numberOfAudioTracks.ToString(), "unfinished_job.ini"));
             }
             if (CheckBoxResume.IsChecked == false)
             {
@@ -1118,6 +1119,7 @@ namespace NotEnoughEncodes
                         if (lines[15] == "True")
                         {
                             CheckBoxEnableAudio.IsChecked = true;
+                            numberOfAudioTracks = Int16.Parse(lines[18]);
                         }
                         TextBoxInputVideo.Text = lines[16];
                         TextBoxOutputVideo.Text = lines[17];
