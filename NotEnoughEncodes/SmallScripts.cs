@@ -32,12 +32,31 @@ namespace NotEnoughEncodes
             try
             {
                 //Delete Files, because of lazy dump****
-                Directory.Delete("Chunks", true);
-                File.Delete("splitted.log");
-                File.Delete("encoded.txt");
-                Directory.Delete("AudioExtracted", true);
-                Directory.Delete("AudioEncoded", true);
-                File.Delete("no_audio.mkv");
+                if (File.Exists("splitted.log"))
+                {
+                    File.Delete("splitted.log");
+                }
+                if (File.Exists("encoded.txt"))
+                {
+                    File.Delete("encoded.txt");
+                }
+                if (File.Exists("no_audio.mkv"))
+                {
+                    File.Delete("no_audio.mkv");
+                }
+                if (Directory.Exists("AudioExtracted"))
+                {
+                    Directory.Delete("AudioExtracted", true);
+                }
+                if (Directory.Exists("AudioEncoded"))
+                {
+                    Directory.Delete("AudioEncoded", true);
+                }
+                if (Directory.Exists("Chunks"))
+                {
+                    Directory.Delete("Chunks", true);
+                }
+
             }
             catch { }
         }
@@ -45,11 +64,29 @@ namespace NotEnoughEncodes
         {
             try
             {
-                Directory.Delete(path + "\\Chunks", true);
-                File.Delete(path + "\\splitted.log");
-                Directory.Delete(path + "\\AudioExtracted", true);
-                Directory.Delete(path + "\\AudioEncoded", true);
-                File.Delete(path + "\\no_audio.mkv");
+
+                if (File.Exists(path + "\\splitted.log"))
+                {
+                    File.Delete(path + "\\splitted.log");
+                }
+
+                if (File.Exists(path + "\\no_audio.mkv"))
+                {
+                    File.Delete(path + "\\no_audio.mkv");
+                }
+                if (Directory.Exists(path + "\\AudioExtracted"))
+                {
+                    Directory.Delete(path + "\\AudioExtracted", true);
+                }
+                if (Directory.Exists(path + "\\AudioEncoded"))
+                {
+                    Directory.Delete(path + "\\AudioEncoded", true);
+                }
+                if (Directory.Exists(path + "\\Chunks"))
+                {
+                    Directory.Delete(path + "\\Chunks", true);
+                }
+
             }
             catch { }
 
