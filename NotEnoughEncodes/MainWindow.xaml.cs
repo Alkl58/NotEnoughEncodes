@@ -437,16 +437,21 @@ namespace NotEnoughEncodes
                 }
 
                 Console.WriteLine(batchencodefile);
-
-                await Task.Run(() => Splitting(batchencodefile, resume, logging, reencode, chunkLength, currentPath));
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Started Splitting...", DispatcherPriority.Background);
+                await Task.Run(() => Split.Splitting(batchencodefile, resume, logging, reencode, chunkLength, currentPath, ffmpegPath));
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Finished Splitting.", DispatcherPriority.Background);
                 //Audio Encoding
                 if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
                 {
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio...", DispatcherPriority.Background);
                     await Task.Run(() => AudioEncode.EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio finished.", DispatcherPriority.Background);
                 }
                 if (CheckBoxResume.IsChecked == false)
                 {
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Renaming Chunks...", DispatcherPriority.Background);
                     await Task.Run(() => Rename.RenameChunks(currentPath));
+                    pLabel.Dispatcher.Invoke(() => pLabel.Content = "Renaming Completed.", DispatcherPriority.Background);
                 }
 
                 //Create Array List with all Chunks
@@ -651,66 +656,29 @@ namespace NotEnoughEncodes
 
         private async void Async(string videoInput, string currentPath, string videoOutput, bool resume, bool logging, bool reencode, string chunkLength, string audioBitrate, string audioCodec, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput, string streamLenghtVideo, string streamFrameRate)
         {
-            await Task.Run(() => Splitting(videoInput, resume, logging, reencode, chunkLength, currentPath));
+            if (resume == false)
+            {
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Started Splitting...", DispatcherPriority.Background);
+                await Task.Run(() => Split.Splitting(videoInput, resume, logging, reencode, chunkLength, currentPath, ffmpegPath));
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Finished Splitting.", DispatcherPriority.Background);
+            }
             //Audio Encoding
             if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio...", DispatcherPriority.Background);
                 await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
                 await Task.Run(() => SmallScripts.WriteToFileThreadSafe(numberOfAudioTracks.ToString(), "unfinished_job.ini"));
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio finished.", DispatcherPriority.Background);
             }
             if (CheckBoxResume.IsChecked == false)
             {
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Renaming Chunks...", DispatcherPriority.Background);
                 await Task.Run(() => Rename.RenameChunks(currentPath));
+                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Renaming Completed.", DispatcherPriority.Background);
             }
             await Task.Run(() => Encoding(currentPath, videoOutput, maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, resume, logging, fps, encMode, customSettingsbool, customSettings, audioOutput, streamLenghtVideo, streamFrameRate));
         }
 
-        private void Splitting(string videoInput, bool resume, bool logging, bool reencode, string chunkLength, string outputPath)
-        {
-            //Start Splitting
-            if (resume == false)
-            {
-                if (logging == true)
-                {
-                    SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Start Splitting", "log.log");
-                }
-                pLabel.Dispatcher.Invoke(() => pLabel.Content = "Started Splitting...", DispatcherPriority.Background);
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
-                startInfo.WorkingDirectory = ffmpegPath;
-                //FFmpeg Arguments
-
-                //Checks if Source needs to be reencoded
-                if (reencode == false)
-                {
-                    if (logging == true)
-                    {
-                        SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting without reencoding", "log.log");
-                    }
-                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vcodec copy -f segment -segment_time " + chunkLength + " -an " + '\u0022' + outputPath + "\\Chunks\\out%0d.mkv" + '\u0022';
-                }
-                else if (reencode == true)
-                {
-                    if (logging == true)
-                    {
-                        SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting with reencoding", "log.log");
-                    }
-                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -c:v utvideo -f segment -segment_time " + chunkLength + " -an " + '\u0022' + outputPath + "\\Chunks\\out%0d.mkv" + '\u0022';
-                    Console.WriteLine(startInfo.Arguments);
-                }
-                //Console.WriteLine(startInfo.Arguments);
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit();
-                if (Cancel.CancelAll == false)
-                {
-                    SmallScripts.WriteToFileThreadSafe("True", outputPath+"\\splitted.log");
-                }
-            }
-        }
 
         private void Encoding(string currentPath, string videoOutput, int maxConcurrency, int cpuUsed, int bitDepth, int encThreads, int cqLevel, int kfmaxdist, int tilecols, int tilerows, int nrPasses, bool resume, bool logging, string fps, string encMode, bool customSettingsbool, string customSettings, bool audioOutput, string streamLenghtVideo, string streamFrameRate)
         {
@@ -1108,8 +1076,6 @@ namespace NotEnoughEncodes
 
         public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch, bool loadsettings, bool delete, bool tempFolderChunks, bool aomencDir, bool ffmpegDir, bool ffprobeDir, string temp, string aomenc, string ffmpeg, string ffprobe)
         {
-            //SaveSettings(enableLog, shutDown, batch, settings, delete, tempFolderChunks, aomencDir, ffmpegDir, ffprobeDir, temp, aomenc, ffmpeg, ffprobe);
-            //(bool enableLog, bool shutDown, bool batch, bool settings, bool delete, bool tempFolderChunks, bool aomencDir, bool ffmpegDir, bool ffprobeDir, string temp, string aomenc, string ffmpeg, string ffprobe)
             //Gets the Settings from the Settings Window and sets them in MainWindow
             logging = Settingslogging;
             shutdownafterencode = shutdown;
@@ -1272,6 +1238,5 @@ namespace NotEnoughEncodes
         {
             streamLength = length;
         }
-
     }
 }
