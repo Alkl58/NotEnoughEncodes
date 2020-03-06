@@ -7,7 +7,7 @@ namespace NotEnoughEncodes
 {
     internal class AudioEncode
     {
-        public static void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
+        public static void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath, string ffmpegPath, bool trackone, bool tracktwo, bool trackthree, bool trackfour)
         {
             if (logging == true)
             {
@@ -106,8 +106,89 @@ namespace NotEnoughEncodes
             //Starts extracting maximal 4 Audio Streams
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.WorkingDirectory = ffmpegPath;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+
+            if (trackone == true && tracktwo == true && trackthree == true && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+            //Only One out of Four Tracks
+            //1st Track
+            if (trackone == true && tracktwo == false && trackthree == false && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022';
+            }
+            //2nd Track
+            if (trackone == false && tracktwo == true && trackthree == false && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022';
+            }
+            //3rd Track
+            if (trackone == false && tracktwo == false && trackthree == true && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022';
+            }
+            //4th Track
+            if (trackone == false && tracktwo == false && trackthree == false && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+
+            //Two out of Four Tracks
+            //1st & 2nd     //                   //
+            if (trackone == true && tracktwo == true && trackthree == false && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022';
+            }
+            //1st & 3rd     //                                          //
+            if (trackone == true && tracktwo == false && trackthree == true && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022';
+            }
+            //1st & 4th     //                                                               //
+            if (trackone == true && tracktwo == false && trackthree == false && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+            //2nd & 3rd                          //                     //
+            if (trackone == false && tracktwo == true && trackthree == true && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022';
+            }
+            //2nd & 4th                          //                                          //
+            if (trackone == false && tracktwo == true && trackthree == false && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+            //3rd & 4th                                                 //                   //
+            if (trackone == false && tracktwo == false && trackthree == true && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+
+            //Three out of Four Tracks
+            //1st & 2nd & 3rd //                   //                    //
+            if (trackone == true && tracktwo == true && trackthree == true && trackfour == false)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022';
+            }
+            //1st & 2nd & 4th //                   //                                       //
+            if (trackone == true && tracktwo == true && trackthree == false && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+            //1st & 3rd & 4th //                                       //                   //
+            if (trackone == true && tracktwo == false && trackthree == true && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath + "\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+            //2nd & 3rd & 4th                      //                  //                   //
+            if (trackone == false && tracktwo == true && trackthree == true && trackfour == true)
+            {
+                startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
+            }
+
             Console.WriteLine(startInfo.Arguments);
             process.StartInfo = startInfo;
             process.Start();
@@ -131,6 +212,7 @@ namespace NotEnoughEncodes
                     //Encodes the Audio to the given format
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
+                    startInfo.WorkingDirectory = ffmpegPath;
                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\AudioExtracted\\" + file + '\u0022' + " " + allAudioSettings + "-vn " + '\u0022' + currentPath + "\\AudioEncoded\\" + file + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;

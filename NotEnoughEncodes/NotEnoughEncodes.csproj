@@ -71,6 +71,7 @@
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
     <Compile Include="SmallScripts.cs" />
+    <Compile Include="Split.cs" />
     <Page Include="AudioSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

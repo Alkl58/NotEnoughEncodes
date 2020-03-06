@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:NotEnoughEncodes"
         x:Class="NotEnoughEncodes.AudioSettings"
         mc:Ignorable="d"
-        Title="Audio Settings" Height="242.667" Width="338" ResizeMode="NoResize">
+        Title="Audio Settings" Height="264" Width="374" ResizeMode="NoResize">
     <Window.Background>
         <ImageBrush ImageSource="bgneu1.jpg" />
     </Window.Background>
-    
+
     <Grid>
-        <ComboBox x:Name="ComboBoxAudioCodec" Width="138" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="130,22,0,0" HorizontalAlignment="Left" Foreground="Black" Background="White" BorderBrush="#FF4F4F4F" SelectionChanged="ComboBoxAudioCodec_SelectionChanged">
+        <ComboBox x:Name="ComboBoxAudioCodec" Width="138" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" OverridesDefaultStyle="True" Margin="155,23,0,0" HorizontalAlignment="Left" Foreground="Black" Background="Black" BorderBrush="#FF4F4F4F" SelectionChanged="ComboBoxAudioCodec_SelectionChanged">
             <ComboBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform />
@@ -21,19 +21,28 @@
                     <TranslateTransform Y="0.324" />
                 </TransformGroup>
             </ComboBox.RenderTransform>
-            <ComboBoxItem IsSelected="True" Foreground="Black" Content="Opus" Background="#00383838" />
-            <ComboBoxItem Content="Opus 5.1" Foreground="Black" />
-            <ComboBoxItem Content="Opus Downmix" Foreground="Black"/>
-            <ComboBoxItem Content="AAC CBR" Foreground="Black" />
-            <ComboBoxItem Content="Copy Audio" Foreground="Black" />
-            <ComboBoxItem Content="AC3" Foreground="Black" />
-            <ComboBoxItem Content="FLAC" Foreground="Black" />
-            <ComboBoxItem Content="MP3 CBR" Foreground="Black" />
-            <ComboBoxItem Content="MP3 VBR" Foreground="Black" />
+            <ComboBoxItem IsSelected="True" Content="Opus" Background="#FF383838" />
+            <ComboBoxItem Content="Opus 5.1" />
+            <ComboBoxItem Content="Opus Downmix"/>
+            <ComboBoxItem Content="AAC CBR"/>
+            <ComboBoxItem Content="Copy Audio"/>
+            <ComboBoxItem Content="AC3" />
+            <ComboBoxItem Content="FLAC" />
+            <ComboBoxItem Content="MP3 CBR" />
+            <ComboBoxItem Content="MP3 VBR" />
         </ComboBox>
-        <Label Content="Select Codec" HorizontalAlignment="Left" Margin="39,20,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
-        <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="131,59,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="137" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" VerticalContentAlignment="Center" />
-        <Button Content="Save" HorizontalAlignment="Left" Margin="65,126,0,0" VerticalAlignment="Top" Width="176" Height="51" Background="#99232323" BorderBrush="White" Foreground="White" Click="Button_Click" />
-        <Label x:Name="LabelBitrate" Content="Bitrate (kbps)" HorizontalAlignment="Left" Margin="39,59,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
+        <Label Content="Select Codec" HorizontalAlignment="Left" Margin="60,21,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
+        <TextBox x:Name="TextBoxAudioBitrate" HorizontalAlignment="Left" Height="25" Margin="156,60,0,0" TextWrapping="Wrap" Text="128" VerticalAlignment="Top" Width="137" Background="#7F232323" Foreground="White" SpellCheck.IsEnabled="True" TextAlignment="Center" TextDecorations="{x:Null}" VerticalContentAlignment="Center" />
+        <Button Content="Save" HorizontalAlignment="Left" Margin="92,162,0,0" VerticalAlignment="Top" Width="176" Height="51" Background="#99232323" BorderBrush="White" Foreground="White" Click="Button_Click" />
+        <Label x:Name="LabelBitrate" Content="Bitrate (kbps)" HorizontalAlignment="Left" Margin="60,60,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" />
+        <Rectangle HorizontalAlignment="Left" Height="52" Margin="25,98,0,0" Stroke="White" VerticalAlignment="Top" Width="322" Fill="#4C232323"/>
+        <CheckBox x:Name="CheckBoxTrackOne" Content="" HorizontalAlignment="Left" Margin="81,100,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" IsChecked="True"/>
+        <CheckBox x:Name="CheckBoxTrackTwo" Content="" HorizontalAlignment="Left" Margin="141,100,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" IsChecked="True"/>
+        <CheckBox x:Name="CheckBoxTrackThree" Content="" HorizontalAlignment="Left" Margin="198,100,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" IsChecked="True"/>
+        <CheckBox x:Name="CheckBoxTrackFour" Content="" HorizontalAlignment="Left" Margin="260,100,0,0" VerticalAlignment="Top" Background="#7FFFFFFF" Foreground="White" BorderBrush="White" IsChecked="True"/>
+        <Label Content="Track 1" HorizontalAlignment="Left" Margin="67,120,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <Label Content="Track 2" HorizontalAlignment="Left" Margin="127,120,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <Label Content="Track 3" HorizontalAlignment="Left" Margin="185,120,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323"/>
+        <Label Content="Track 4" HorizontalAlignment="Left" Margin="246,120,0,0" VerticalAlignment="Top" Foreground="White" Background="#99232323" RenderTransformOrigin="0.596,0.513"/>
     </Grid>
 </Window>
