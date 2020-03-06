@@ -12,7 +12,7 @@
     </Window.Background>
 
     <Grid>
-        <ComboBox x:Name="ComboBoxAudioCodec" Width="138" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" OverridesDefaultStyle="True" Margin="155,23,0,0" HorizontalAlignment="Left" Foreground="Black" Background="Black" BorderBrush="#FF4F4F4F" SelectionChanged="ComboBoxAudioCodec_SelectionChanged">
+        <ComboBox x:Name="ComboBoxAudioCodec" Width="138" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="155,23,0,0" HorizontalAlignment="Left" Foreground="Black" Background="White" BorderBrush="#FF4F4F4F" SelectionChanged="ComboBoxAudioCodec_SelectionChanged">
             <ComboBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform />
@@ -21,7 +21,7 @@
                     <TranslateTransform Y="0.324" />
                 </TransformGroup>
             </ComboBox.RenderTransform>
-            <ComboBoxItem IsSelected="True" Content="Opus" Background="#FF383838" />
+            <ComboBoxItem IsSelected="True" Content="Opus"/>
             <ComboBoxItem Content="Opus 5.1" />
             <ComboBoxItem Content="Opus Downmix"/>
             <ComboBoxItem Content="AAC CBR"/>
