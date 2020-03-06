@@ -81,9 +81,32 @@ namespace NotEnoughEncodes
         //Checks the dependencies (ffmpeg, aomenc, ffprobe)
         public static void CheckDependencies()
         {
-            bool aomencExist = File.Exists("aomenc.exe");
-            bool ffmpegExist = File.Exists("ffmpeg.exe");
-            bool ffprobeExist = File.Exists("ffprobe.exe");
+            bool aomencExist = false;
+            bool ffmpegExist = false;
+            bool ffprobeExist = false;
+            if (MainWindow.customAomencPathActive == true)
+            {
+                aomencExist = File.Exists(MainWindow.customAomencPath+"\\aomenc.exe");
+            }else if (MainWindow.customAomencPathActive == false)
+            {
+                aomencExist = File.Exists("aomenc.exe");
+            }
+
+            if (MainWindow.customFfmpegPathActive == true)
+            {
+                ffmpegExist = File.Exists(MainWindow.customFfmpegPath+"\\ffmpeg.exe");
+            }else if (MainWindow.customFfmpegPathActive == false)
+            {
+                ffmpegExist = File.Exists("ffmpeg.exe");
+            }
+            if (MainWindow.customFfprobePathActive == true)
+            {
+                ffprobeExist = File.Exists(MainWindow.customFfprobePath + "\\ffprobe.exe");
+            }else if (MainWindow.customFfprobePathActive == false)
+            {
+                ffprobeExist = File.Exists("ffprobe.exe");
+            }
+            
             if (aomencExist == false || ffmpegExist == false || ffprobeExist == false)
             {
                 MessageBox.Show("Couldn't find all depedencies: \n aomenc found: " + aomencExist + "\n ffmpeg found: " + ffmpegExist + " \n ffprobe found: " + ffprobeExist);
@@ -105,6 +128,7 @@ namespace NotEnoughEncodes
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
+                WorkingDirectory = MainWindow.ffprobePath + "\\",
                 Arguments = "/C ffprobe.exe -i " + input + " -show_entries format=duration -v quiet -of csv=" + '\u0022' + "p=0" + '\u0022',
                 RedirectStandardError = true,
                 RedirectStandardOutput = true

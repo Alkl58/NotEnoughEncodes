@@ -7,7 +7,7 @@ namespace NotEnoughEncodes
 {
     internal class AudioEncode
     {
-        public static void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath)
+        public static void EncodeAudio(string videoInput, bool logging, string audioBitrate, string audioCodec, string currentPath, string ffmpegPath)
         {
             if (logging == true)
             {
@@ -106,6 +106,7 @@ namespace NotEnoughEncodes
             //Starts extracting maximal 4 Audio Streams
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.WorkingDirectory = ffmpegPath;
             startInfo.FileName = "cmd.exe";
             startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:0 " + '\u0022' + currentPath +"\\AudioExtracted\\audio0.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:1 " + '\u0022' + currentPath + "\\AudioExtracted\\audio1.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:2 " + '\u0022' + currentPath + "\\AudioExtracted\\audio2.mkv" + '\u0022' + " & ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -vn -map_metadata -1 -c copy -map 0:a:3 " + '\u0022' + currentPath + "\\AudioExtracted\\audio3.mkv" + '\u0022';
             Console.WriteLine(startInfo.Arguments);
@@ -131,6 +132,7 @@ namespace NotEnoughEncodes
                     //Encodes the Audio to the given format
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
+                    startInfo.WorkingDirectory = ffmpegPath;
                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\AudioExtracted\\" + file + '\u0022' + " " + allAudioSettings + "-vn " + '\u0022' + currentPath + "\\AudioEncoded\\" + file + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
                     process.StartInfo = startInfo;

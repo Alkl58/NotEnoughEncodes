@@ -37,6 +37,21 @@ namespace NotEnoughEncodes
                 CheckBoxTempFolder.IsChecked = true;
                 TextBoxTempFolder.Text = MainWindow.tempFolder;
             }
+            if (MainWindow.customFfmpegPathActive == true)
+            {
+                CheckBoxFfmpegFolder.IsChecked = true;
+                TextBoxFfmpeg.Text = MainWindow.customFfmpegPath;
+            }
+            if (MainWindow.customAomencPathActive == true)
+            {
+                CheckBoxAomencFolder.IsChecked = true;
+                TextBoxAomenc.Text = MainWindow.customAomencPath;
+            }
+            if (MainWindow.customFfprobePathActive == true)
+            {
+                CheckBoxFfprobeFolder.IsChecked = true;
+                TextBoxFfprobe.Text = MainWindow.customFfprobePath;
+            }
         }
 
         private bool checkboxlogging;
@@ -52,6 +67,7 @@ namespace NotEnoughEncodes
         private string aomencFolderDir;
         private string ffmpegFolderDir;
         private string ffprobeFolderDir;
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (CheckBoxLogging.IsChecked == true)
@@ -94,14 +110,17 @@ namespace NotEnoughEncodes
                 ffprobeFolder = true;
                 ffprobeFolderDir = TextBoxFfprobe.Text;
             }
+
             SendSettingsToSave(checkboxlogging, shutDownAfterEncode, batchEncode, customSettings, deletefiles, tempFolder, aomencFolder, ffmpegFolder, ffprobeFolder, tempFolderDir, aomencFolderDir, ffmpegFolderDir, ffprobeFolderDir);
         }
 
         private void SendSettingsToSave(bool enableLog, bool shutDown, bool batch, bool settings, bool delete, bool tempFolderChunks, bool aomencDir, bool ffmpegDir, bool ffprobeDir, string temp, string aomenc, string ffmpeg, string ffprobe)
         {
-            MainWindow.SaveSettings(enableLog, shutDown, batch, settings, delete, tempFolderChunks, aomencDir, ffmpegDir, ffprobeDir, temp, aomenc, ffmpeg, ffprobe);
-            //Closes the Window after Settings have been send to main window
-            this.Close();
+            {
+                 MainWindow.SaveSettings(enableLog, shutDown, batch, settings, delete, tempFolderChunks, aomencDir, ffmpegDir, ffprobeDir, temp, aomenc, ffmpeg, ffprobe);
+                //Closes the Window after Settings have been send to main window
+                this.Close();
+            }
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -136,25 +155,7 @@ namespace NotEnoughEncodes
             }
         }
 
-        private void ButtonFfmpeg_Click(object sender, RoutedEventArgs e)
-        {
-            if (CheckBoxFfmpegFolder.IsChecked == true)
-            {
-                System.Windows.Forms.FolderBrowserDialog browse = new System.Windows.Forms.FolderBrowserDialog();
-                if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    TextBoxFfmpeg.Text = browse.SelectedPath;
-                    bool fileExist = File.Exists(TextBoxFfmpeg.Text + "\\ffmpeg.exe");
 
-                    if (fileExist != true)
-                    {
-                        MessageBox.Show("Couldn't find ffmpeg in the directory!");
-                    }
-
-                }
-            }
-
-        }
 
         private void ButtonFfprobe_Click(object sender, RoutedEventArgs e)
         {
@@ -169,6 +170,26 @@ namespace NotEnoughEncodes
                     if (fileExist != true)
                     {
                         MessageBox.Show("Couldn't find ffprobe in the directory!");
+                    }
+
+                }
+            }
+
+        }
+
+        private void ButtonFfmpeg_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxFfmpegFolder.IsChecked == true)
+            {
+                System.Windows.Forms.FolderBrowserDialog browse = new System.Windows.Forms.FolderBrowserDialog();
+                if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    TextBoxFfmpeg.Text = browse.SelectedPath;
+                    bool fileExist = File.Exists(TextBoxFfmpeg.Text + "\\ffmpeg.exe");
+
+                    if (fileExist != true)
+                    {
+                        MessageBox.Show("Couldn't find ffmpeg in the directory!");
                     }
 
                 }

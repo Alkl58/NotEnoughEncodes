@@ -7,7 +7,7 @@ namespace NotEnoughEncodes
     //Muxing all Files back together
     internal class Concatenate
     {
-        public static void Concat(string videoOutput, bool audioOutput, string currentPath)
+        public static void Concat(string videoOutput, bool audioOutput, string currentPath, string ffmpegPath)
         {
             if (MainWindow.Cancel.CancelAll == false)
             {
@@ -31,6 +31,7 @@ namespace NotEnoughEncodes
                     //Concat the Videos
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
+                    startInfo.WorkingDirectory = ffmpegPath;
                     //FFmpeg Arguments
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i " + '\u0022' + currentPath + "\\Chunks\\mylist.txt"+ '\u0022' + " -c copy " + '\u0022' + outputfilename + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
@@ -43,6 +44,7 @@ namespace NotEnoughEncodes
                     //Concat the Videos
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
+                    startInfo.WorkingDirectory = ffmpegPath;
                     //FFmpeg Arguments
                     startInfo.Arguments = "/C ffmpeg.exe -f concat -safe 0 -i " + '\u0022' + currentPath + "\\Chunks\\mylist.txt" + '\u0022' + " -c copy "+ '\u0022' + currentPath+"\\no_audio.mkv" + '\u0022';
                     Console.WriteLine(startInfo.Arguments);
@@ -53,6 +55,7 @@ namespace NotEnoughEncodes
                     //Concat the Videos
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.FileName = "cmd.exe";
+                    startInfo.WorkingDirectory = ffmpegPath;
                     //FFmpeg Arguments
                     //Sets the mapping of the video and audiostreams and muxes them
                     if (MainWindow.numberOfAudioTracks == 1)

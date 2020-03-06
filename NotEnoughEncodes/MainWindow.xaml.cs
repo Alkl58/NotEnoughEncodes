@@ -24,6 +24,15 @@ namespace NotEnoughEncodes
         public static bool deleteTempFiles = false;
         public static string tempFolder;
         public static bool tempFolderActive;
+        public static string customFfmpegPath;
+        public static bool customFfmpegPathActive = false;
+        public static string ffmpegPath;
+        public static string aomencPath;
+        public static string ffprobePath;
+        public static bool customAomencPathActive = false;
+        public static string customAomencPath;
+        public static bool customFfprobePathActive = false;
+        public static string customFfprobePath;
 
         public MainWindow()
         {
@@ -39,9 +48,17 @@ namespace NotEnoughEncodes
             int tempCorecount = coreCount * 1 / 2;
             TextBoxNumberWorkers.Text = tempCorecount.ToString();
             //Checks for aomenc, ffmpeg and ffprobe
-            SmallScripts.CheckDependencies();
-            //Load Settings
             ReadSettings();
+            SmallScripts.CheckDependencies();
+            if (customFfprobePathActive == false)
+            {
+                ffprobePath = Directory.GetCurrentDirectory();
+            }
+            else if (customFfprobePathActive == true)
+            {
+                ffprobePath = customFfprobePath;
+            }
+            //Load Settings
             LoadUnfinishedJob();
         }
 
@@ -79,11 +96,32 @@ namespace NotEnoughEncodes
                     {
                         CheckBoxEnableAudio.IsChecked = true;
                     }
-                    tempFolder = lines[16];
-                    if (lines[17] == "True")
+                    if (lines[16] == "True")
                     {
                         tempFolderActive = true;
+                        tempFolder = lines[17];
                     }
+                    if (lines[18] == "True")
+                    {
+                        customFfmpegPath = lines[19];
+                        customFfmpegPathActive = true;
+                    }
+                    if (lines[20] == "True")
+                    {
+                        customAomencPath = lines[21];
+                        customAomencPathActive = true;
+                    }
+                    if (lines[22] == "True")
+                    {
+                        customFfprobePathActive = true;
+                        customFfprobePath = lines[23];
+                        Console.WriteLine("testaa" + lines[22] + " " + customFfprobePathActive + " " + customFfprobePath);
+                    }
+                    if (lines[24] == "True")
+                    {
+                        deleteTempFiles = true;
+                    }
+                    
                 }
                 //Reads custom settings to settings_custom.ini
                 bool customFileExist = File.Exists("settings_custom.ini");
@@ -92,6 +130,7 @@ namespace NotEnoughEncodes
                     string[] linesa = File.ReadAllLines("settings_custom.ini");
                     TextBoxCustomSettings.Text = linesa[0];
                 }
+
             }
             catch { }
         }
@@ -102,12 +141,19 @@ namespace NotEnoughEncodes
             string audioCheckBox = CheckBoxEnableAudio.IsChecked.ToString();
             string customSettingsBool = enableCustomSettings.ToString();
             string tempFolderSaveActive = tempFolderActive.ToString();
+            string exeFfprobe = customFfprobePathActive.ToString();
+            string exeFfmpeg = customFfmpegPathActive.ToString();
+            string exeAomenc = customAomencPathActive.ToString();
             string customSettings = TextBoxCustomSettings.Text;
             string maxConcurrency = TextBoxNumberWorkers.Text;
             string kfmaxdist = TextBoxKeyframeInterval.Text;
+            string deleteTemp = deleteTempFiles.ToString();
             string chunkLength = TextBoxChunkLength.Text;
             string audioSettingsBitrate = audioBitrate;
             string encThreads = TextBoxEncThreads.Text;
+            string exeFfprobePath = customFfprobePath;
+            string exeAomencPath = customAomencPath;
+            string exeFfmpegPath = customFfmpegPath;
             string bitDepth = ComboBoxBitdepth.Text;
             string tilecols = TextBoxTileCols.Text;
             string tilerows = TextBoxTileRows.Text;
@@ -118,6 +164,9 @@ namespace NotEnoughEncodes
             string cqLevel = TextBoxcqLevel.Text;
             string fps = TextBoxFramerate.Text;
             string tempFolderSave = tempFolder;
+            
+
+
 
             if (audioSettingsCodec == "" || audioSettingsCodec == null)
             {
@@ -135,7 +184,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, tempFolderSave, tempFolderSaveActive };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, tempFolderSaveActive, tempFolderSave, exeFfmpeg, exeFfmpegPath, exeAomenc, exeAomencPath, exeFfprobe, exeFfprobePath, deleteTemp };
             File.WriteAllLines("settings.ini", lines);
         }
 
@@ -328,6 +377,22 @@ namespace NotEnoughEncodes
                 {
                     currentPath = tempFolder;
                 }
+                if (customFfmpegPathActive == false)
+                {
+                    ffmpegPath = Directory.GetCurrentDirectory();
+                }
+                else if (customFfmpegPathActive == true)
+                {
+                    ffmpegPath = customFfmpegPath;
+                }
+                if (customAomencPathActive == false)
+                {
+                    aomencPath = Path.Combine(Directory.GetCurrentDirectory(), "aomenc.exe");
+                }
+                else if (customAomencPathActive == true)
+                {
+                    aomencPath = Path.Combine(customAomencPath, "aomenc.exe");
+                }
                 //Checks if Chunks folder exist, if no it creates Chunks folder
                 if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                     Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
@@ -377,7 +442,7 @@ namespace NotEnoughEncodes
                 //Audio Encoding
                 if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
                 {
-                    await Task.Run(() => AudioEncode.EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath));
+                    await Task.Run(() => AudioEncode.EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
                 }
                 if (CheckBoxResume.IsChecked == false)
                 {
@@ -444,7 +509,7 @@ namespace NotEnoughEncodes
                 await Task.Run(() => Encode(maxConcurrency, nrPasses, allSettingsAom, resume, batchencodeoutputfile, audioOutput, streamLenghtVideo, fps, streamFrameRate, currentPath));
                 //Set Maximum of Progressbar
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
-                await Task.Run(() => Concatenate.Concat(batchencodeoutputfile, audioOutput, currentPath));
+                await Task.Run(() => Concatenate.Concat(batchencodeoutputfile, audioOutput, currentPath, ffmpegPath));
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttimea).ToString(), DispatcherPriority.Background);
                 if (batchEncoding == true)
                 {
@@ -471,6 +536,7 @@ namespace NotEnoughEncodes
             public static bool CancelAll = false;
         }
         string currentPath;
+        
         public void MainClass()
         {
             string videoInput = "";
@@ -490,7 +556,28 @@ namespace NotEnoughEncodes
             {
                 currentPath = tempFolder;
             }
-            
+            if (customFfmpegPathActive == false)
+            {
+                ffmpegPath = Directory.GetCurrentDirectory();
+            }else if (customFfmpegPathActive == true)
+            {
+                ffmpegPath = customFfmpegPath;
+            }
+            if (customAomencPathActive == false)
+            {
+                aomencPath = Path.Combine(Directory.GetCurrentDirectory(), "aomenc.exe");
+            }else if (customAomencPathActive == true)
+            {
+                aomencPath = Path.Combine(customAomencPath, "aomenc.exe");
+            }
+            if (customFfprobePathActive == false)
+            {
+                ffprobePath = Directory.GetCurrentDirectory();
+            }else if (customFfprobePathActive == true)
+            {
+                ffprobePath = customFfprobePath;
+            }
+
             //Checks if Chunks folder exist, if no it creates Chunks folder
             if (!Directory.Exists(Path.Combine(currentPath, "Chunks")))
                 Directory.CreateDirectory(Path.Combine(currentPath, "Chunks"));
@@ -568,7 +655,7 @@ namespace NotEnoughEncodes
             //Audio Encoding
             if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
-                await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath));
+                await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
                 await Task.Run(() => SmallScripts.WriteToFileThreadSafe(numberOfAudioTracks.ToString(), "unfinished_job.ini"));
             }
             if (CheckBoxResume.IsChecked == false)
@@ -593,6 +680,7 @@ namespace NotEnoughEncodes
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
+                startInfo.WorkingDirectory = ffmpegPath;
                 //FFmpeg Arguments
 
                 //Checks if Source needs to be reencoded
@@ -611,6 +699,7 @@ namespace NotEnoughEncodes
                         SmallScripts.WriteToFileThreadSafe(DateTime.Now.ToString("h:mm:ss tt") + " Splitting with reencoding", "log.log");
                     }
                     startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + videoInput + '\u0022' + " -c:v utvideo -f segment -segment_time " + chunkLength + " -an " + '\u0022' + outputPath + "\\Chunks\\out%0d.mkv" + '\u0022';
+                    Console.WriteLine(startInfo.Arguments);
                 }
                 //Console.WriteLine(startInfo.Arguments);
                 process.StartInfo = startInfo;
@@ -817,10 +906,12 @@ namespace NotEnoughEncodes
                                     Process process = new Process();
                                     ProcessStartInfo startInfo = new ProcessStartInfo();
                                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                    startInfo.UseShellExecute = true;
                                     startInfo.FileName = "cmd.exe";
-                                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=1" + allSettingsAom + " --output="+ '\u0022' + currentPath+"\\Chunks\\" + items + "-av1.ivf" + '\u0022';
+                                    startInfo.WorkingDirectory = ffmpegPath + "\\";
+                                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | "+ '\u0022' + aomencPath + '\u0022' + " - --passes=1" + allSettingsAom + " --output="+ '\u0022' + currentPath+"\\Chunks\\" + items + "-av1.ivf" + '\u0022';
                                     process.StartInfo = startInfo;
-                                    //Console.WriteLine(startInfo.Arguments);
+                                    Console.WriteLine(startInfo.Arguments);
                                     process.Start();
                                     process.WaitForExit();
 
@@ -846,13 +937,14 @@ namespace NotEnoughEncodes
                                     Process process = new Process();
                                     ProcessStartInfo startInfo = new ProcessStartInfo();
 
-                                    bool FileExistFirstPass = File.Exists(currentPath + "\\Chunks\\"  +items + "_1pass_successfull.log");
+                                    bool FileExistFirstPass = File.Exists(currentPath + "\\Chunks\\"  + items + "_1pass_successfull.log");
                                     if (FileExistFirstPass != true)
                                     {
 
                                         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                         startInfo.FileName = "cmd.exe";
-                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=1 --fpf=" + '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log" + '\u0022' + allSettingsAom + " --output=NUL";
+                                        startInfo.WorkingDirectory = ffmpegPath + "\\";
+                                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | " + '\u0022' + aomencPath + '\u0022' + " - --passes=2 --pass=1 --fpf=" + '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log" + '\u0022' + allSettingsAom + " --output=NUL";
                                         process.StartInfo = startInfo;
                                         //Console.WriteLine(startInfo.Arguments);
                                         process.Start();
@@ -871,7 +963,8 @@ namespace NotEnoughEncodes
 
                                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                     startInfo.FileName = "cmd.exe";
-                                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | aomenc.exe - --passes=2 --pass=2 --fpf="+ '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log"+ '\u0022' + allSettingsAom + " --output="+ '\u0022' + currentPath + "\\Chunks\\" + items + "-av1.ivf" + '\u0022';
+                                    startInfo.WorkingDirectory = ffmpegPath + "\\";
+                                    startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + sdira + "\\" + items + '\u0022' + " -pix_fmt yuv420p -vsync 0 -f yuv4mpegpipe - | " + '\u0022' + aomencPath + '\u0022' + " - --passes=2 --pass=2 --fpf=" + '\u0022' + currentPath + "\\Chunks\\" + items + "_stats.log"+ '\u0022' + allSettingsAom + " --output="+ '\u0022' + currentPath + "\\Chunks\\" + items + "-av1.ivf" + '\u0022';
                                     process.StartInfo = startInfo;
                                     //Console.WriteLine(startInfo.Arguments);
                                     process.Start();
@@ -881,7 +974,6 @@ namespace NotEnoughEncodes
                                     TimeSpan timespent = DateTime.Now - starttime;
                                     pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - " + Math.Round(Convert.ToDecimal(((((Int16.Parse(streamLenghtVideo) * Int16.Parse(streamFrameRate)) / Int16.Parse(labelstring)) * prgbar.Value) / timespent.TotalSeconds)), 2).ToString() + "fps" + " - " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + "min left", DispatcherPriority.Background);
                                     //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring + " - eta: " + Math.Round((((timespent.TotalSeconds / prgbar.Value) * (Int16.Parse(labelstring) - prgbar.Value)) / 60), MidpointRounding.ToEven) + " min left", DispatcherPriority.Background);
-                                    //pLabel.Dispatcher.Invoke(() => pLabel.Content = prgbar.Value + " / " + labelstring, DispatcherPriority.Background);
                                     if (Cancel.CancelAll == false)
                                     {
                                         //Write Item to file for later resume if something bad happens
@@ -916,7 +1008,7 @@ namespace NotEnoughEncodes
         private async void LocalConcat(string videoOutput, bool audioOutput, string currentPath)
         {
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
-            await Task.Run(() => Concatenate.Concat(videoOutput, audioOutput, currentPath));
+            await Task.Run(() => Concatenate.Concat(videoOutput, audioOutput, currentPath, ffmpegPath));
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttimea).ToString(), DispatcherPriority.Background);
             if (Cancel.CancelAll == false)
             {
@@ -993,9 +1085,11 @@ namespace NotEnoughEncodes
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
+                WorkingDirectory = ffprobePath + "\\",
                 Arguments = "/C ffprobe.exe -i " + input + " -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true
+
             };
             process.Start();
             string fpsOutput = process.StandardOutput.ReadLine();
@@ -1014,6 +1108,8 @@ namespace NotEnoughEncodes
 
         public static void SaveSettings(bool Settingslogging, bool shutdown, bool batch, bool loadsettings, bool delete, bool tempFolderChunks, bool aomencDir, bool ffmpegDir, bool ffprobeDir, string temp, string aomenc, string ffmpeg, string ffprobe)
         {
+            //SaveSettings(enableLog, shutDown, batch, settings, delete, tempFolderChunks, aomencDir, ffmpegDir, ffprobeDir, temp, aomenc, ffmpeg, ffprobe);
+            //(bool enableLog, bool shutDown, bool batch, bool settings, bool delete, bool tempFolderChunks, bool aomencDir, bool ffmpegDir, bool ffprobeDir, string temp, string aomenc, string ffmpeg, string ffprobe)
             //Gets the Settings from the Settings Window and sets them in MainWindow
             logging = Settingslogging;
             shutdownafterencode = shutdown;
@@ -1022,7 +1118,12 @@ namespace NotEnoughEncodes
             deleteTempFiles = delete;
             tempFolder = temp;
             tempFolderActive = tempFolderChunks;
-
+            customFfmpegPathActive = ffmpegDir;
+            customFfmpegPath = ffmpeg;
+            customAomencPathActive = aomencDir;
+            customAomencPath = aomenc;
+            customFfprobePathActive = ffprobeDir;
+            customFfprobePath = ffprobe;
         }
 
         public void SetBatch()
@@ -1171,5 +1272,6 @@ namespace NotEnoughEncodes
         {
             streamLength = length;
         }
+
     }
 }
