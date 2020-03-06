@@ -33,6 +33,10 @@ namespace NotEnoughEncodes
         public static string customAomencPath;
         public static bool customFfprobePathActive = false;
         public static string customFfprobePath;
+        public static bool trackoneactive = true;
+        public static bool tracktwoactive = true;
+        public static bool trackthreeactive = true;
+        public static bool trackfouractive = true;
 
         public MainWindow()
         {
@@ -121,7 +125,44 @@ namespace NotEnoughEncodes
                     {
                         deleteTempFiles = true;
                     }
-                    
+                    if (lines[25] == "True")
+                    {
+                        trackoneactive = true;
+
+                    }
+                    else if (lines[25] == "False")
+                    {
+                        trackoneactive = false;
+
+                    }
+                    if (lines[26] == "True")
+                    {
+                        tracktwoactive = true;
+
+                    }
+                    else if (lines[26] == "False")
+                    {
+                        tracktwoactive = false;
+                    }
+                    if (lines[27] == "True")
+                    {
+                        trackthreeactive = true;
+
+                    }
+                    else if (lines[27] == "False")
+                    {
+                        trackthreeactive = false;
+                    }
+                    if (lines[28] == "True")
+                    {
+                        trackfouractive = true;
+
+                    }
+                    else if (lines[28] == "False")
+                    {
+                        trackfouractive = false;
+                    }
+
                 }
                 //Reads custom settings to settings_custom.ini
                 bool customFileExist = File.Exists("settings_custom.ini");
@@ -164,7 +205,10 @@ namespace NotEnoughEncodes
             string cqLevel = TextBoxcqLevel.Text;
             string fps = TextBoxFramerate.Text;
             string tempFolderSave = tempFolder;
-            
+            string trackone = trackoneactive.ToString();
+            string tracktwo = tracktwoactive.ToString();
+            string trackthree = trackthreeactive.ToString();
+            string trackfour = trackfouractive.ToString();
 
 
 
@@ -184,7 +228,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, tempFolderSaveActive, tempFolderSave, exeFfmpeg, exeFfmpegPath, exeAomenc, exeAomencPath, exeFfprobe, exeFfprobePath, deleteTemp };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, tempFolderSaveActive, tempFolderSave, exeFfmpeg, exeFfmpegPath, exeAomenc, exeAomencPath, exeFfprobe, exeFfprobePath, deleteTemp, trackone, tracktwo, trackthree, trackfour };
             File.WriteAllLines("settings.ini", lines);
         }
 
@@ -444,7 +488,7 @@ namespace NotEnoughEncodes
                 if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
                 {
                     pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio...", DispatcherPriority.Background);
-                    await Task.Run(() => AudioEncode.EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
+                    await Task.Run(() => AudioEncode.EncodeAudio(batchencodefile, logging, audioBitrate, audioCodec, currentPath, ffmpegPath, trackoneactive, tracktwoactive, trackthreeactive, trackfouractive));
                     pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio finished.", DispatcherPriority.Background);
                 }
                 if (CheckBoxResume.IsChecked == false)
@@ -514,7 +558,7 @@ namespace NotEnoughEncodes
                 await Task.Run(() => Encode(maxConcurrency, nrPasses, allSettingsAom, resume, batchencodeoutputfile, audioOutput, streamLenghtVideo, fps, streamFrameRate, currentPath));
                 //Set Maximum of Progressbar
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
-                await Task.Run(() => Concatenate.Concat(batchencodeoutputfile, audioOutput, currentPath, ffmpegPath));
+                await Task.Run(() => Concatenate.Concat(batchencodeoutputfile, audioOutput, currentPath, ffmpegPath, trackoneactive, tracktwoactive, trackthreeactive, trackfouractive));
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttimea).ToString(), DispatcherPriority.Background);
                 if (batchEncoding == true)
                 {
@@ -666,7 +710,7 @@ namespace NotEnoughEncodes
             if (CheckBoxEnableAudio.IsChecked == true && CheckBoxResume.IsChecked == false)
             {
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio...", DispatcherPriority.Background);
-                await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath, ffmpegPath));
+                await Task.Run(() => AudioEncode.EncodeAudio(videoInput, logging, audioBitrate, audioCodec, currentPath, ffmpegPath, trackoneactive, tracktwoactive, trackthreeactive, trackfouractive));
                 await Task.Run(() => SmallScripts.WriteToFileThreadSafe(numberOfAudioTracks.ToString(), "unfinished_job.ini"));
                 pLabel.Dispatcher.Invoke(() => pLabel.Content = "Encoding Audio finished.", DispatcherPriority.Background);
             }
@@ -976,7 +1020,7 @@ namespace NotEnoughEncodes
         private async void LocalConcat(string videoOutput, bool audioOutput, string currentPath)
         {
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing files", DispatcherPriority.Background);
-            await Task.Run(() => Concatenate.Concat(videoOutput, audioOutput, currentPath, ffmpegPath));
+            await Task.Run(() => Concatenate.Concat(videoOutput, audioOutput, currentPath, ffmpegPath, trackoneactive, tracktwoactive, trackthreeactive, trackfouractive));
             pLabel.Dispatcher.Invoke(() => pLabel.Content = "Muxing completed! Elapsed Time: " + (DateTime.Now - starttimea).ToString(), DispatcherPriority.Background);
             if (Cancel.CancelAll == false)
             {
@@ -1126,10 +1170,14 @@ namespace NotEnoughEncodes
             audiosettings.Show();
         }
 
-        public static void SaveAudioSettings(string AudioCodec, string AudioBitrate)
+        public static void SaveAudioSettings(string AudioCodec, string AudioBitrate, bool trackone, bool tracktwo, bool trackthree, bool trackfour)
         {
             audioCodec = AudioCodec;
             audioBitrate = AudioBitrate;
+            trackoneactive = trackone;
+            tracktwoactive = tracktwo;
+            trackthreeactive = trackthree;
+            trackfouractive = trackfour;
         }
 
         public void SaveUnfinishedJob()
@@ -1141,6 +1189,8 @@ namespace NotEnoughEncodes
             string maxConcurrency = TextBoxNumberWorkers.Text;
             string kfmaxdist = TextBoxKeyframeInterval.Text;
             string chunkLength = TextBoxChunkLength.Text;
+            string videoOutput = TextBoxOutputVideo.Text;
+            string videoInput = TextBoxInputVideo.Text;
             string audioSettingsBitrate = audioBitrate;
             string encThreads = TextBoxEncThreads.Text;
             string bitDepth = ComboBoxBitdepth.Text;
@@ -1152,8 +1202,10 @@ namespace NotEnoughEncodes
             string nrPasses = ComboBoxPasses.Text;
             string cqLevel = TextBoxcqLevel.Text;
             string fps = TextBoxFramerate.Text;
-            string videoInput = TextBoxInputVideo.Text;
-            string videoOutput = TextBoxOutputVideo.Text;
+            string trackone = trackoneactive.ToString();
+            string tracktwo = tracktwoactive.ToString();
+            string trackthree = trackthreeactive.ToString();
+            string trackfour = trackfouractive.ToString();
             
 
             //Saves custom settings in settings_custom.ini
@@ -1163,7 +1215,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("unfinished_job_settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour };
             File.WriteAllLines("unfinished_job.ini", lines);
         }
 
@@ -1207,6 +1259,45 @@ namespace NotEnoughEncodes
                         }
                         TextBoxInputVideo.Text = lines[16];
                         TextBoxOutputVideo.Text = lines[17];
+                        if (lines[18] == "True")
+                        {
+                            trackoneactive = true;
+
+                        }else if (lines[18] == "False")
+                        {
+                            trackoneactive = false;
+
+                        }
+                        if (lines[19] == "True")
+                        {
+                            tracktwoactive = true;
+
+                        }
+                        else if (lines[19] == "False")
+                        {
+                            tracktwoactive = false;
+                        }
+                        if (lines[20] == "True")
+                        {
+                            trackthreeactive = true;
+
+                        }
+                        else if (lines[20] == "False")
+                        {
+                            trackthreeactive = false;
+                        }
+                        if (lines[21] == "True")
+                        {
+                            trackfouractive = true;
+
+                        }
+                        else if (lines[21] == "False")
+                        {
+                            trackfouractive = false;
+                        }
+
+
+                        //string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour };
                         CheckBoxResume.IsChecked = true;
                         SmallScripts.GetStreamLength(TextBoxInputVideo.Text);
                         GetStreamFps(TextBoxInputVideo.Text);
