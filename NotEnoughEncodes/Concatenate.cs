@@ -60,68 +60,18 @@ namespace NotEnoughEncodes
                     //Sets the mapping of the video and audiostreams and muxes them
                     if (MainWindow.numberOfAudioTracks == 1)
                     {
-                        if (trackone == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (tracktwo == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackthree == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -map 0:v -map 1:a -c copy " + '\u0022' + outputfilename + '\u0022';
+
                     }
                     else if (MainWindow.numberOfAudioTracks == 2)
                     {
-                        if (trackone == true && tracktwo == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackone == true && trackthree == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackone == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (tracktwo == true && trackthree == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (tracktwo == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackthree == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -c copy " + '\u0022' + outputfilename + '\u0022';
+
                     }
                     else if (MainWindow.numberOfAudioTracks == 3)
                     {
-                        if (trackone == true && tracktwo == true && trackthree == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackone == true && tracktwo == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (trackone == true && trackthree == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
-                        if (tracktwo == true && trackthree == true && trackfour == true)
-                        {
-                            startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio3.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
-                        }
+
+                        startInfo.Arguments = "/C ffmpeg.exe -i " + '\u0022' + currentPath + "\\no_audio.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio0.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio1.mkv" + '\u0022' + " -i " + '\u0022' + currentPath + "\\AudioEncoded\\audio2.mkv" + '\u0022' + " -map 0:v -map 1:a -map 2:a -map 3:a -c copy " + '\u0022' + outputfilename + '\u0022';
 
                     }
                     else if (MainWindow.numberOfAudioTracks == 4)

@@ -9,6 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 
 namespace NotEnoughEncodes
@@ -119,7 +122,7 @@ namespace NotEnoughEncodes
                     {
                         customFfprobePathActive = true;
                         customFfprobePath = lines[23];
-                        Console.WriteLine("testaa" + lines[22] + " " + customFfprobePathActive + " " + customFfprobePath);
+                        //Console.WriteLine("testaa" + lines[22] + " " + customFfprobePathActive + " " + customFfprobePath);
                     }
                     if (lines[24] == "True")
                     {
@@ -1206,6 +1209,7 @@ namespace NotEnoughEncodes
             string tracktwo = tracktwoactive.ToString();
             string trackthree = trackthreeactive.ToString();
             string trackfour = trackfouractive.ToString();
+            string nrAudioTracks = numberOfAudioTracks.ToString();
             
 
             //Saves custom settings in settings_custom.ini
@@ -1215,7 +1219,7 @@ namespace NotEnoughEncodes
                 File.WriteAllLines("unfinished_job_settings_custom.ini", linescustom);
             }
 
-            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour };
+            string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour, nrAudioTracks };
             File.WriteAllLines("unfinished_job.ini", lines);
         }
 
@@ -1255,7 +1259,7 @@ namespace NotEnoughEncodes
                         if (lines[15] == "True")
                         {
                             CheckBoxEnableAudio.IsChecked = true;
-                            numberOfAudioTracks = Int16.Parse(lines[18]);
+                            numberOfAudioTracks = Int16.Parse(lines[22]);
                         }
                         TextBoxInputVideo.Text = lines[16];
                         TextBoxOutputVideo.Text = lines[17];
@@ -1296,8 +1300,8 @@ namespace NotEnoughEncodes
                             trackfouractive = false;
                         }
 
+                        //string[] lines = {ioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour };
 
-                        //string[] lines = { maxConcurrency, cpuUsed, bitDepth, encThreads, cqLevel, kfmaxdist, tilecols, tilerows, nrPasses, fps, encMode, chunkLength, audioSettingsCodec, audioSettingsBitrate, customSettingsBool, audioCheckBox, videoInput, videoOutput, trackone, tracktwo, trackthree, trackfour };
                         CheckBoxResume.IsChecked = true;
                         SmallScripts.GetStreamLength(TextBoxInputVideo.Text);
                         GetStreamFps(TextBoxInputVideo.Text);
@@ -1328,6 +1332,11 @@ namespace NotEnoughEncodes
         public static void SetStreamLength(string length)
         {
             streamLength = length;
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
