@@ -1,5 +1,10 @@
 # NotEnoughEncodes
 
+---
+### This Repo is discontinued
+### Please Check out the new Repo: https://github.com/Alkl58/NotEnoughAV1Encodes 
+---
+
 NotEnoughEncodes is a small GUI Handler for aomenc (AV1). 
 
 NotEnoughEncodes is a tool to make encoding easier and faster for the AV1 reference encoder.
